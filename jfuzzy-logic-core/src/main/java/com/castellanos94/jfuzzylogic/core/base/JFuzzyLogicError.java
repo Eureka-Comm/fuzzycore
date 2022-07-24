@@ -1,4 +1,4 @@
-package com.castellanos94.jfuzzylogic.core;
+package com.castellanos94.jfuzzylogic.core.base;
 
 /**
  * Thrown to indicate that the method has encountered a controlled error.

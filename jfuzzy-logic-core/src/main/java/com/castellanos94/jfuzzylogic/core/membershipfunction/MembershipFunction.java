@@ -1,6 +1,6 @@
 package com.castellanos94.jfuzzylogic.core.membershipfunction;
 
-import com.castellanos94.jfuzzylogic.core.JFuzzyLogicError;
+import com.castellanos94.jfuzzylogic.core.base.JFuzzyLogicError;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
