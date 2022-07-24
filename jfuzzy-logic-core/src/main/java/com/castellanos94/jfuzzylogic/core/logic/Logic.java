@@ -1,4 +1,4 @@
-package com.castellanos94.jfuzzylogic.core;
+package com.castellanos94.jfuzzylogic.core.logic;
 
 import java.util.Collection;
 
@@ -55,7 +55,7 @@ public abstract class Logic {
 
     public abstract double forAll(Collection<Double> values);
 
-    public abstract double exits(Collection<Double> values);
+    public abstract double exist(Collection<Double> values);
 
     public ImplicationType getType() {
         return type;

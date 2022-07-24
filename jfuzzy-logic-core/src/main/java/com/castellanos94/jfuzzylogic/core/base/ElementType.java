@@ -1,4 +1,4 @@
-package com.castellanos94.jfuzzylogic.core;
+package com.castellanos94.jfuzzylogic.core.base;
 
 /**
  * Element type for classifier a element

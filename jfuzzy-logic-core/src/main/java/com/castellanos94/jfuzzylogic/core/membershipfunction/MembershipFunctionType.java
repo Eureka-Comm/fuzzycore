@@ -1,4 +1,4 @@
-package com.castellanos94.jfuzzylogic.core;
+package com.castellanos94.jfuzzylogic.core.membershipfunction;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

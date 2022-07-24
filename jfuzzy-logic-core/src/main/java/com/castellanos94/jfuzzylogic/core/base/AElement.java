@@ -1,4 +1,4 @@
-package com.castellanos94.jfuzzylogic.core;
+package com.castellanos94.jfuzzylogic.core.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

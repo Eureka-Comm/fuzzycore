@@ -1,4 +1,4 @@
-package com.castellanos94.jfuzzylogic.core;
+package com.castellanos94.jfuzzylogic.core.base;
 
 /**
  * Operator type for classifier a predicate root

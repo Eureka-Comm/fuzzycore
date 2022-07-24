@@ -1,7 +1,13 @@
-package com.castellanos94.jfuzzylogic.core;
+package com.castellanos94.jfuzzylogic.core.membershipfunction;
 
+import com.castellanos94.jfuzzylogic.core.JFuzzyLogicError;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+/**
+ * Abstract class representing a membership function definition
+ * 
+ * @version 1.0
+ */
 public abstract class MembershipFunction {
     protected final MembershipFunctionType type;
     protected boolean editable;
