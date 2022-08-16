@@ -4,10 +4,13 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 public abstract class Operator extends AElement implements Comparable<Operator>, Iterable<AElement> {
+    @JsonProperty
     protected LinkedHashSet<AElement> children;
     protected Double fitness;
 
