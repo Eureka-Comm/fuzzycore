@@ -97,11 +97,9 @@ public class OperatorTest {
         And and = new And(alcohol, q);
 
         ObjectMapper mapper = new ObjectMapper();
-        String str = mapper.writeValueAsString(and);
         Operator operator = mapper.readValue(
                 "{\"@type\":\"and\",\"label\":null,\"description\":null,\"editable\":false,\"children\":[{\"@type\":\"state\",\"label\":\"alcohol\",\"description\":null,\"editable\":false,\"colName\":\"acohol\",\"membershipFunction\":null},{\"@type\":\"state\",\"label\":\"quality\",\"description\":null,\"editable\":false,\"colName\":\"quality\",\"membershipFunction\":null}],\"fitness\":null}",
                 Operator.class);
         assertEquals(and, operator);
-
     }
 }

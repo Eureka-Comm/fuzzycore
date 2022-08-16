@@ -40,7 +40,7 @@ public abstract class Operator extends AElement implements Comparable<Operator>,
     }
 
     public void setFitness(Double fitness) {
-        this.fitness = fitness;
+        this.fitness = fitness;                     
     }
 
     @Override
@@ -48,7 +48,7 @@ public abstract class Operator extends AElement implements Comparable<Operator>,
         StringBuffer buffer = new StringBuffer(String.format("(%s", getClass().getSimpleName().toUpperCase()));
         this.children.forEach(c -> {
             if (c instanceof Operator) {
-                buffer.append(c.toString());
+                buffer.append(" ").append(c.toString());
             } else {
                 buffer.append(String.format(" \"%s\"", c.getLabel()));
             }
