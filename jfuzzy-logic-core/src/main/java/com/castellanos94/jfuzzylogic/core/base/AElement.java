@@ -2,6 +2,7 @@ package com.castellanos94.jfuzzylogic.core.base;
 
 import com.castellanos94.jfuzzylogic.core.base.impl.And;
 import com.castellanos94.jfuzzylogic.core.base.impl.Eqv;
+import com.castellanos94.jfuzzylogic.core.base.impl.Generator;
 import com.castellanos94.jfuzzylogic.core.base.impl.Imp;
 import com.castellanos94.jfuzzylogic.core.base.impl.Not;
 import com.castellanos94.jfuzzylogic.core.base.impl.Or;
@@ -30,7 +31,8 @@ import lombok.ToString;
         @Type(value = Or.class, names = { "or", "OR" }),
         @Type(value = Imp.class, names = { "imp", "IMP" }),
         @Type(value = Eqv.class, names = { "eqv", "EQV" }),
-        @Type(value = Not.class, names = { "not", "NOT" })
+        @Type(value = Not.class, names = { "not", "NOT" }),
+        @Type(value = Generator.class, names = { "generator", "Generator","GENERATOR","*","comodin" })
 })
 @Getter
 @Setter

@@ -1,7 +1,5 @@
 package com.castellanos94.jfuzzylogic.core.base.impl;
 
-import java.util.Objects;
-
 import com.castellanos94.jfuzzylogic.core.base.AElement;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
 
