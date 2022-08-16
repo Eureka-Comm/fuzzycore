@@ -12,8 +12,11 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = false)
 @ToString(callSuper = true)
 public class FPG extends MembershipFunction {
+    @EqualsAndHashCode.Include
     protected Double beta;
+    @EqualsAndHashCode.Include
     protected Double gamma;
+    @EqualsAndHashCode.Include
     protected Double m;
 
     public FPG() {
@@ -25,13 +28,13 @@ public class FPG extends MembershipFunction {
         this.m = m;
     }
 
-    public FPG(Double beta, Double gamma, Double m, boolean editable) {
+    protected FPG(Double beta, Double gamma, Double m, boolean editable) {
         this(beta, gamma, m);
         this.editable = editable;
     }
 
     @Override
-    public MembershipFunction copy() {
+    public FPG copy() {
         return new FPG(beta, gamma, m, editable);
 
     }

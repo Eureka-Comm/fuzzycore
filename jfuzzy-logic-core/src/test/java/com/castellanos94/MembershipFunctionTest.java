@@ -28,4 +28,12 @@ public class MembershipFunctionTest {
         System.out.println(fpg2);
         assertEquals(fpg, fpg2);
     }
+
+    @Test
+    public void copyFPG() throws JsonProcessingException {
+        FPG fpg = new FPG(3.0, 5.0, 0.5);
+        FPG fpg2 = (FPG) fpg.copy();
+        
+        assertEquals(fpg, fpg2);
+    }
 }
