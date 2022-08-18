@@ -5,6 +5,9 @@ import com.castellanos94.jfuzzylogic.core.logic.Logic;
 import com.castellanos94.jfuzzylogic.core.logic.LogicType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.Builder;
+import lombok.extern.jackson.Jacksonized;
+
 /**
  * Builder for <code>Logic</code>
  * 

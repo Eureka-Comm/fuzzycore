@@ -16,6 +16,11 @@ public class State extends AElement {
     protected String colName;
     protected MembershipFunction membershipFunction;
 
+    public State(String label) {
+        this.label = label;
+        this.colName = label;
+    }
+
     public State(String label, String colName) {
         this.label = label;
         this.colName = colName;
