@@ -13,6 +13,8 @@ import com.castellanos94.jfuzzylogic.core.base.Operator;
 
 /**
  * Class for Operator utilities
+ * 
+ * @see Operator
  */
 public class OperatorUtil {
     /**
