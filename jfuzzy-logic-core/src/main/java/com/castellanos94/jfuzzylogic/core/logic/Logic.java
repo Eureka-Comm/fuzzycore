@@ -2,12 +2,16 @@ package com.castellanos94.jfuzzylogic.core.logic;
 
 import java.util.Collection;
 
+import com.castellanos94.jfuzzylogic.core.logic.impl.LogicBuilder;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 /**
  * Abstract class representing an logic
  * 
  * @version 1.0.0
  * @see ImplicationType
  */
+@JsonDeserialize(builder = LogicBuilder.class)
 public abstract class Logic {
     protected ImplicationType type;
 

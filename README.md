@@ -1,6 +1,7 @@
 # Fuzzy Logic Java Framework
 This framework is developed in Java version 11.
-
+# Requirements
+It is necessary to install the  <a href="https://projectlombok.org/">Lombok</a>  plugin in your IDE.
 # Logics:
   * Zadeh
   * AMBC

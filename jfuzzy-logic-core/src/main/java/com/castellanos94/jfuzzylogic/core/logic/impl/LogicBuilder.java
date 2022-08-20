@@ -4,19 +4,24 @@ import com.castellanos94.jfuzzylogic.core.logic.ImplicationType;
 import com.castellanos94.jfuzzylogic.core.logic.Logic;
 import com.castellanos94.jfuzzylogic.core.logic.LogicType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
-import lombok.Builder;
-import lombok.extern.jackson.Jacksonized;
+import lombok.EqualsAndHashCode;
 
 /**
  * Builder for <code>Logic</code>
  * 
  * @version 0.5.0
  */
+@JsonPOJOBuilder(buildMethodName = "create", withPrefix = "set")
+@EqualsAndHashCode
 public class LogicBuilder {
     protected LogicType type;
     protected Integer exponent;
     protected ImplicationType implicationType;
+
+    protected LogicBuilder() {
+    }
 
     public static LogicBuilder newBuilder(LogicType type) {
         return new LogicBuilder(type);
@@ -42,7 +47,7 @@ public class LogicBuilder {
     }
 
     @JsonIgnore
-    public Logic build() {
+    public Logic create() {
         if (implicationType == null) {
             implicationType = ImplicationType.Zadeh;
         }
