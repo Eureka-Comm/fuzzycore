@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.castellanos94.jfuzzylogic.algorithm.Algorithm;
 import com.castellanos94.jfuzzylogic.core.OperatorUtil;
 import com.castellanos94.jfuzzylogic.core.base.AElement;
@@ -27,6 +30,7 @@ import tech.tablesaw.api.Table;
 import tech.tablesaw.columns.Column;
 
 public class EvaluationAlgorithm extends Algorithm {
+    private static final Logger log = LogManager.getLogger(EvaluationAlgorithm.class);
     protected HashMap<String, List<Double>> data;
     protected EvaluationResult result;
     protected Table table;
@@ -86,6 +90,7 @@ public class EvaluationAlgorithm extends Algorithm {
         } else if (node instanceof State) {
             return data.get(((State) node).getUuid()).get(index);
         } else {
+            log.error("FitValue for {} at {}", node, task.getPredicate());
             throw new JFuzzyLogicError(JFuzzyLogicError.UNSUPPORTED + " " + node + " from " + task.getPredicate()
                     + " at evaluate:fitValue");
         }

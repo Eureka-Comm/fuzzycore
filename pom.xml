@@ -18,6 +18,7 @@
     <jackson.version>2.13.3</jackson.version>
     <lombok.version>1.18.24</lombok.version>
     <jfuzzy.logic.version>0.1.0</jfuzzy.logic.version>
+    <org.log4j.version>2.17.1</org.log4j.version>
   </properties>
 
   <developers>
@@ -59,6 +60,17 @@
         <artifactId>lombok</artifactId>
         <version>${lombok.version}</version>
         <scope>provided</scope>
+      </dependency>
+      <!-- Logger -->
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${org.log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${org.log4j.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

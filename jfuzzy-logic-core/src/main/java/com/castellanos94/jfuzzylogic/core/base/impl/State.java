@@ -7,8 +7,8 @@ import com.castellanos94.jfuzzylogic.core.membershipfunction.MembershipFunction;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode.Exclude;
+import lombok.NoArgsConstructor;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
