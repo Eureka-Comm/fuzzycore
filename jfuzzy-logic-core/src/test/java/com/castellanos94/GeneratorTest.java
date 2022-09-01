@@ -27,5 +27,6 @@ public class GeneratorTest {
         System.out.println(str);
         Generator g = mapper.readValue(str, Generator.class);
         assertEquals(generator, g);
+        
     }
 }

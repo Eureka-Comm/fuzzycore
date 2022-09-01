@@ -10,5 +10,6 @@ import lombok.Setter;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 public class EvaluationTask extends Task {
+    @EqualsAndHashCode.Include
     protected boolean extended;
 }

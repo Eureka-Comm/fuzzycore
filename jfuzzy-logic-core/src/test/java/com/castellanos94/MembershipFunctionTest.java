@@ -17,8 +17,7 @@ public class MembershipFunctionTest {
      */
     @Test
     public void fpgSerialization() throws JsonProcessingException {
-        FPG fpg = new FPG(3.0, 5.0, 0.5);
-
+        FPG fpg = new FPG(3.0, 5.0, 0.5);        
         ObjectMapper mapper = new ObjectMapper();
         String str = mapper.writeValueAsString(fpg);
         System.out.println(str);

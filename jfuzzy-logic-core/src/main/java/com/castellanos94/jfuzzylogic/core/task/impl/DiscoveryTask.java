@@ -13,15 +13,20 @@ import lombok.Setter;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 public class DiscoveryTask extends Task {
+    @EqualsAndHashCode.Include
     protected Integer populationSize;
+    @EqualsAndHashCode.Include
     protected Integer numResult;
-    protected Float minTruthValue;
-    protected Float mutationRate;
+    @EqualsAndHashCode.Include
+    protected Double minTruthValue;
+    @EqualsAndHashCode.Include
+    protected Double mutationRate;
+    @EqualsAndHashCode.Include
     protected Long maxTime;
-
+    @EqualsAndHashCode.Include
     protected Integer adjPopulationSize;
+    @EqualsAndHashCode.Include
     protected Integer adjMaxIter;
-    protected Float adjMinTruthValue;
-
-    protected HashSet<Generator> generators;
+    @EqualsAndHashCode.Include
+    protected Double adjMinTruthValue;    
 }

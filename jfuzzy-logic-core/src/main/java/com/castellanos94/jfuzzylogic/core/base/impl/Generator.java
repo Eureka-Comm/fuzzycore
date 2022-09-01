@@ -1,10 +1,14 @@
 package com.castellanos94.jfuzzylogic.core.base.impl;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.castellanos94.jfuzzylogic.core.base.AElement;
+import com.castellanos94.jfuzzylogic.core.base.JFuzzyLogicError;
+import com.castellanos94.jfuzzylogic.core.base.Operator;
 import com.castellanos94.jfuzzylogic.core.base.OperatorType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,14 +19,13 @@ import lombok.ToString;
 @Getter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class Generator extends AElement {
+public class Generator extends Operator {
     protected Integer depth;
     protected Integer maxChild;
-    protected Set<AElement> children;
     protected Set<OperatorType> operators;
 
     public Generator() {
-        this.children = new HashSet<>();
+        this.children = new LinkedHashSet<>();
         this.operators = new HashSet<>();
     }
 
@@ -35,20 +38,46 @@ public class Generator extends AElement {
         this.depth = depth;
         this.maxChild = maxChild;
         if (child != null) {
-            this.children = child;
+            this.children = new LinkedHashSet<>(child);
         }
         this.operators = operators;
     }
 
+    @Deprecated
+    @Override
+    @JsonIgnore
+    public Double getFitness() {
+        return Double.NaN;
+    }
+
+    @Deprecated
+    @Override
+    @JsonIgnore
+    public void setFitness(Double fitness) {
+
+    }
+
+    @Deprecated
+    @Override
+    public int compareTo(Operator o) {
+        throw new JFuzzyLogicError(JFuzzyLogicError.UNSUPPORTED + getClass().getSimpleName());
+    }
+
     public void add(AElement e, AElement... others) {
-        if (e != null) {
-            this.children.add(e);
-        }
+        add(e);
         for (AElement o : others) {
             if (o != null) {
-                this.children.add(o);
+                add(o);
             }
         }
+    }
+
+    @Override
+    public boolean add(AElement e) {
+        if( e instanceof Operator){
+            throw new JFuzzyLogicError("Operators cannot be added");
+        }
+        return _add(e);
     }
 
     public void add(OperatorType e, OperatorType... others) {
