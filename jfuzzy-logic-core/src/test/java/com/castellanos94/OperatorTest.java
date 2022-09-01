@@ -52,6 +52,11 @@ public class OperatorTest {
         Imp imp = new Imp();
         imp.add(alcohol);
         imp.add(q);
+        System.out.println(imp);
+        imp.setAntecedent(new Or());
+        System.out.println(imp);
+        imp.setConsequent(alcohol);
+        System.out.println(imp);
         imp.add(a);
     }
 

@@ -14,5 +14,7 @@ import lombok.Setter;
 @Setter
 public class EvaluationResult extends Result {
     protected Operator predicate;
+    protected Double forAll;
+    protected Double exists;
     protected HashMap<String, List<Double>> data;
 }

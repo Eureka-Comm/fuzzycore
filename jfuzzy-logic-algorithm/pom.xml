@@ -25,6 +25,10 @@
       <artifactId>jfuzzy-logic-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>tech.tablesaw</groupId>
+      <artifactId>tablesaw-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
@@ -34,7 +38,7 @@
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>      
+      <artifactId>lombok</artifactId>
     </dependency>
   </dependencies>
 

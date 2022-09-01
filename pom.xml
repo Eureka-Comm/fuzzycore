@@ -31,11 +31,16 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>tech.tablesaw</groupId>
+        <artifactId>tablesaw-core</artifactId>
+        <version>LATEST</version>
+      </dependency>
+      <dependency>
         <groupId>com.castellanos94</groupId>
         <artifactId>jfuzzy-logic-core</artifactId>
         <version>${jfuzzy.logic.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
