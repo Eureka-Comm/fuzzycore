@@ -11,32 +11,33 @@ import lombok.ToString;
 @Setter
 @EqualsAndHashCode(callSuper = false)
 @ToString(callSuper = true)
-public class Sigmoid extends MembershipFunction {
+public class NSigmoid extends MembershipFunction {
     protected Double center;
     protected Double beta;
 
-    public Sigmoid() {
+    public NSigmoid() {
     }
 
-    public Sigmoid(Double center, Double beta) {
+    public NSigmoid(Double center, Double beta) {
         this.center = center;
         this.beta = beta;
     }
 
-    public Sigmoid(Double center, Double beta, boolean editable) {
+    public NSigmoid(Double center, Double beta, boolean editable) {
         this(center, beta);
         this.editable = editable;
     }
 
     @Override
-    public double eval(Number value) {
+    public double eval(Number value) {    
         Double v = value.doubleValue();
-        return (1 / (1 + (Math.exp(-((Math.log(0.99) - Math.log(0.01)) / (center - beta)) * (v - center)))));
+        double alpha = (Math.log(0.99) - Math.log(0.01)) / (beta - center);
+        return 1.0 - 1.0 / (1 + Math.exp(-alpha * (v - beta)));
     }
 
     @Override
-    public Sigmoid copy() {
-        return new Sigmoid(center, beta, editable);
+    public NSigmoid copy() {
+        return new NSigmoid(center, beta, editable);
     }
 
     @Override
@@ -49,3 +50,4 @@ public class Sigmoid extends MembershipFunction {
         return (center != null && beta != null) && center > beta;
     }
 }
+

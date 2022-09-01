@@ -97,10 +97,10 @@ public class EvaluationAlgorithm extends Algorithm {
         List<Double> values = new ArrayList<>();
         if (node instanceof And) {
             ((And) node).forEach(n -> values.add(fitValue(n, index)));
-            return logic.or(values);
+            return logic.and(values);
         } else if (node instanceof Or) {
             ((Or) node).forEach(n -> values.add(fitValue(n, index)));
-            return logic.and(values);
+            return logic.or(values);
         } else if (node instanceof Imp) {
             Imp imp = (Imp) node;
             return logic.imp(fitValue(imp.getAntecedent(), index), fitValue(imp.getConsequent(), index));

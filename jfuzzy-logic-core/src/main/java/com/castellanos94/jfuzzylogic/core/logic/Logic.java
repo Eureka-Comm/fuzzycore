@@ -52,7 +52,7 @@ public abstract class Logic {
     }
 
     public double eqv(double a, double b) {
-        return this.and(this.imp(a, b), this.imp(a, b));
+        return this.and(this.imp(a, b), this.imp(b, a));
     }
 
     public abstract double not(double a);
