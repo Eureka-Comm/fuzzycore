@@ -28,12 +28,14 @@ public class EvaluationTest {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("datasets/tinto.csv").getFile());
         Table table = Table.read().csv(file);
-        EvaluationAlgorithm algorithm = new EvaluationAlgorithm(task, table);
+        EvaluationAlgorithm algorithm = new EvaluationAlgorithm(task.getPredicate(), task.getLogicBuilder().create(),
+                table);
         algorithm.execute();
         EvaluationResult result = algorithm.getResult();
         final long maxTimeMS = 500;
         long elapsedTime = (result.getEndTime() - result.getStartTime());
-        System.out.println(String.format("The elapsed time %5ds must be less than or equal to %5ds", elapsedTime, maxTimeMS));
+        System.out.println(
+                String.format("The elapsed time %5ds must be less than or equal to %5ds", elapsedTime, maxTimeMS));
         assertTrue(
                 String.format("The elapsed time %5ds must be less than or equal to %5ds", elapsedTime, maxTimeMS),
                 elapsedTime <= maxTimeMS);

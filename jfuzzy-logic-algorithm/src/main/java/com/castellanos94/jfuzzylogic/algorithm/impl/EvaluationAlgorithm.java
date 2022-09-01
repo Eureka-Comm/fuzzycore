@@ -22,13 +22,17 @@ import com.castellanos94.jfuzzylogic.core.base.impl.Not;
 import com.castellanos94.jfuzzylogic.core.base.impl.Or;
 import com.castellanos94.jfuzzylogic.core.base.impl.State;
 import com.castellanos94.jfuzzylogic.core.logic.Logic;
-import com.castellanos94.jfuzzylogic.core.task.impl.EvaluationTask;
 
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.NumericColumn;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.columns.Column;
 
+/**
+ * Algorithm for evaluate predicate
+ * 
+ * @version 1.0.0
+ */
 public class EvaluationAlgorithm extends Algorithm {
     private static final Logger log = LogManager.getLogger(EvaluationAlgorithm.class);
     private static final List<ColumnType> numeriColumnTypes = Arrays.asList(ColumnType.DOUBLE, ColumnType.FLOAT,
@@ -38,25 +42,41 @@ public class EvaluationAlgorithm extends Algorithm {
     protected EvaluationResult result;
     protected Table table;
     protected Logic logic;
+    protected Operator predicate;
 
-    public EvaluationAlgorithm(EvaluationTask task, Table table) {
-        this.task = task;
+    /**
+     * Default constructor
+     * 
+     * @param predicate to evaluate
+     * @param logic     to applies
+     * @param table     dataset
+     */
+    public EvaluationAlgorithm(Operator predicate, Logic logic, Table table) {
+        this.predicate = predicate;
         this.table = table;
-        this.logic = task.getLogicBuilder().create();
+        this.logic = logic;
         this.result = new EvaluationResult();
     }
 
+    /**
+     * Performs the evaluation of the predicate, assigning the truth value given the
+     * data set.
+     * 
+     * @throws JFuzzyLogicError in case of: missing column, a null element in the
+     *                          predicate (node or membership function) and the
+     *                          evaluation of a non-compatible element.
+     */
     @Override
     public void execute() {
         this.startTime = System.currentTimeMillis();
         this.result.setStartTime(startTime);
         fuzzyData();
-        evaluate(task.getPredicate());
+        evaluate();
         this.endTime = System.currentTimeMillis();
         this.result.setEndTime(endTime);
     }
 
-    private void evaluate(Operator predicate) {
+    private void evaluate() {
         List<Double> result = new ArrayList<>(table.rowCount());
         for (int i = 0; i < table.rowCount(); i++) {
             result.add(fitValue(predicate, i));
@@ -72,7 +92,7 @@ public class EvaluationAlgorithm extends Algorithm {
     private Double fitValue(AElement node, int index) {
         if (node == null) {
             throw new JFuzzyLogicError(String.format("The element to be evaluated cannot be null, in the predicate %s",
-                    task.getPredicate()));
+                    predicate));
         }
         List<Double> values = new ArrayList<>();
         if (node instanceof And) {
@@ -93,15 +113,15 @@ public class EvaluationAlgorithm extends Algorithm {
         } else if (node instanceof State) {
             return data.get(((State) node).getUuid()).get(index);
         } else {
-            log.error("FitValue for {} at {}", node, task.getPredicate());
-            throw new JFuzzyLogicError(JFuzzyLogicError.UNSUPPORTED + " " + node + " from " + task.getPredicate()
+            log.error("FitValue for {} at {}", node, predicate);
+            throw new JFuzzyLogicError(JFuzzyLogicError.UNSUPPORTED + " " + node + " from " + predicate
                     + " at evaluate:fitValue");
         }
     }
 
     private void fuzzyData() {
         this.data = new HashMap<>();
-        ArrayList<State> states = OperatorUtil.getNodesByClass(task.getPredicate(), State.class);
+        ArrayList<State> states = OperatorUtil.getNodesByClass(predicate, State.class);
 
         for (State state : states) {
             if (!table.containsColumn(state.getColName())) {
