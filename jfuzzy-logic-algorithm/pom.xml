@@ -1,62 +1,42 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>jfuzzy-logic</artifactId>
+    <groupId>com.castellanos94</groupId>
+    <version>0.1.0</version>
+  </parent>
+
   <groupId>com.castellanos94</groupId>
-  <artifactId>jfuzzy-logic</artifactId>
+  <artifactId>jfuzzy-logic-algorithm</artifactId>
   <version>0.1.0</version>
-  <packaging>pom</packaging>
-  <name>jfuzzy-logic</name>
-  <description>A java framework for fuzzy logic</description>
-  <url>http://github.com/castellanos94/jfuzzy-logic-core</url>
+
+  <name>jfuzzy-logic-algorithm</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
-    <tech.tablesaw.version>0.38.2</tech.tablesaw.version>
-    <org.log4j.version>2.17.1</org.log4j.version>
-    <jackson.version>2.13.3</jackson.version>
-    <lombok.version>1.18.24</lombok.version>
-    <jfuzzy.logic.version>0.1.0</jfuzzy.logic.version>
   </properties>
 
-  <developers>
-    <developer>
-      <name>Alejandro Castellanos-Alvarez</name>
-      <email>alex81_castellanos@hotmail.com</email>
-      <url>http://castellanos94.github.io/</url>
-    </developer>
-  </developers>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>com.castellanos94</groupId>
-        <artifactId>jfuzzy-logic-core</artifactId>
-        <version>${jfuzzy.logic.version}</version>
-      </dependency>
-      
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>4.11</version>
-        <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <version>${lombok.version}</version>
-        <scope>provided</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>com.castellanos94</groupId>
+      <artifactId>jfuzzy-logic-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>      
+    </dependency>
+  </dependencies>
 
   <build>
     <pluginManagement>
@@ -104,8 +84,4 @@
       </plugins>
     </pluginManagement>
   </build>
-  <modules>
-    <module>jfuzzy-logic-core</module>
-    <module>jfuzzy-logic-algorithm</module>
-  </modules>
 </project>
