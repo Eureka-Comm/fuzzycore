@@ -39,11 +39,12 @@ public class EvaluationTest {
                 EvaluationResult result = algorithm.getResult();
                 final long maxTimeMS = 500;
                 long elapsedTime = (result.getEndTime() - result.getStartTime());
+                System.out.println(predicate);
                 System.out.println(
-                                String.format("The elapsed time %5ds must be less than or equal to %5ds", elapsedTime,
+                                String.format("The elapsed time %5dms must be less than or equal to %5dms", elapsedTime,
                                                 maxTimeMS));
                 assertTrue(
-                                String.format("The elapsed time %5ds must be less than or equal to %5ds", elapsedTime,
+                                String.format("The elapsed time %5dms must be less than or equal to %5dms", elapsedTime,
                                                 maxTimeMS),
                                 elapsedTime <= maxTimeMS);
                 double epsilon = 0.000001d;
@@ -65,11 +66,12 @@ public class EvaluationTest {
                 EvaluationResult result = algorithm.getResult();
                 final long maxTimeMS = 500;
                 long elapsedTime = (result.getEndTime() - result.getStartTime());
+                System.out.println(predicate);
                 System.out.println(
-                                String.format("The elapsed time %5ds must be less than or equal to %5ds", elapsedTime,
+                                String.format("The elapsed time %5dms must be less than or equal to %5dms", elapsedTime,
                                                 maxTimeMS));
                 assertTrue(
-                                String.format("The elapsed time %5ds must be less than or equal to %5ds", elapsedTime,
+                                String.format("The elapsed time %5dms must be less than or equal to %5dms", elapsedTime,
                                                 maxTimeMS),
                                 elapsedTime <= maxTimeMS);
                 double epsilon = 0.000001d;
@@ -91,11 +93,12 @@ public class EvaluationTest {
                 EvaluationResult result = algorithm.getResult();
                 final long maxTimeMS = 500;
                 long elapsedTime = (result.getEndTime() - result.getStartTime());
+                System.out.println(predicate);
                 System.out.println(
-                                String.format("The elapsed time %5ds must be less than or equal to %5ds", elapsedTime,
+                                String.format("The elapsed time %5dms must be less than or equal to %5dms", elapsedTime,
                                                 maxTimeMS));
                 assertTrue(
-                                String.format("The elapsed time %5ds must be less than or equal to %5ds", elapsedTime,
+                                String.format("The elapsed time %5dms must be less than or equal to %5dms", elapsedTime,
                                                 maxTimeMS),
                                 elapsedTime <= maxTimeMS);
                 double epsilon = 0.000001d;
@@ -119,11 +122,12 @@ public class EvaluationTest {
                 EvaluationResult result = algorithm.getResult();
                 final long maxTimeMS = 500;
                 long elapsedTime = (result.getEndTime() - result.getStartTime());
+                System.out.println(predicate);
                 System.out.println(
-                                String.format("The elapsed time %5ds must be less than or equal to %5ds", elapsedTime,
+                                String.format("The elapsed time %5dms must be less than or equal to %5dms", elapsedTime,
                                                 maxTimeMS));
                 assertTrue(
-                                String.format("The elapsed time %5ds must be less than or equal to %5ds", elapsedTime,
+                                String.format("The elapsed time %5dms must be less than or equal to %5dms", elapsedTime,
                                                 maxTimeMS),
                                 elapsedTime <= maxTimeMS);
                 double epsilon = 0.000001d;
@@ -147,11 +151,12 @@ public class EvaluationTest {
                 EvaluationResult result = algorithm.getResult();
                 final long maxTimeMS = 500;
                 long elapsedTime = (result.getEndTime() - result.getStartTime());
+                System.out.println(task.getPredicate());
                 System.out.println(
-                                String.format("The elapsed time %5ds must be less than or equal to %5ds", elapsedTime,
+                                String.format("The elapsed time %5dms must be less than or equal to %5dms", elapsedTime,
                                                 maxTimeMS));
                 assertTrue(
-                                String.format("The elapsed time %5ds must be less than or equal to %5ds", elapsedTime,
+                                String.format("The elapsed time %5dms must be less than or equal to %5dms", elapsedTime,
                                                 maxTimeMS),
                                 elapsedTime <= maxTimeMS);
                 double epsilon = 0.000001d;
