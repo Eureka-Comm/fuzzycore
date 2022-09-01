@@ -31,6 +31,9 @@ import tech.tablesaw.columns.Column;
 
 public class EvaluationAlgorithm extends Algorithm {
     private static final Logger log = LogManager.getLogger(EvaluationAlgorithm.class);
+    private static final List<ColumnType> numeriColumnTypes = Arrays.asList(ColumnType.DOUBLE, ColumnType.FLOAT,
+            ColumnType.INTEGER,
+            ColumnType.LONG, ColumnType.SHORT);
     protected HashMap<String, List<Double>> data;
     protected EvaluationResult result;
     protected Table table;
@@ -99,8 +102,7 @@ public class EvaluationAlgorithm extends Algorithm {
     private void fuzzyData() {
         this.data = new HashMap<>();
         ArrayList<State> states = OperatorUtil.getNodesByClass(task.getPredicate(), State.class);
-        List<ColumnType> numeriColumnTypes = Arrays.asList(ColumnType.DOUBLE, ColumnType.FLOAT, ColumnType.INTEGER,
-                ColumnType.LONG, ColumnType.SHORT);
+
         for (State state : states) {
             if (!table.containsColumn(state.getColName())) {
                 throw new JFuzzyLogicError(String.format("Column %s does not exist for the state %s",
