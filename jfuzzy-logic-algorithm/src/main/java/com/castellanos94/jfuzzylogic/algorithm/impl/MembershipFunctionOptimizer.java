@@ -1,24 +1,34 @@
 package com.castellanos94.jfuzzylogic.algorithm.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.castellanos94.jfuzzylogic.algorithm.Algorithm;
+import com.castellanos94.jfuzzylogic.algorithm.IMembershipFunctionCrossover;
 import com.castellanos94.jfuzzylogic.algorithm.IMembershipFunctionGenerator;
+import com.castellanos94.jfuzzylogic.algorithm.IMembershipFunctionMutation;
 import com.castellanos94.jfuzzylogic.algorithm.IMembershipFunctionRepair;
+import com.castellanos94.jfuzzylogic.algorithm.MembershipFunctionChromosome;
 import com.castellanos94.jfuzzylogic.core.OperatorUtil;
 import com.castellanos94.jfuzzylogic.core.base.JFuzzyLogicError;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
 import com.castellanos94.jfuzzylogic.core.base.Result;
+import com.castellanos94.jfuzzylogic.core.base.impl.EvaluationResult;
 import com.castellanos94.jfuzzylogic.core.base.impl.State;
 import com.castellanos94.jfuzzylogic.core.logic.Logic;
 import com.castellanos94.jfuzzylogic.core.membershipfunction.MembershipFunction;
 import com.castellanos94.jfuzzylogic.core.membershipfunction.impl.FPG;
 
+import tech.tablesaw.api.NumericColumn;
 import tech.tablesaw.api.Table;
 
 /**
@@ -29,6 +39,7 @@ import tech.tablesaw.api.Table;
  * @see FPGGenerator FPG generator operator default
  */
 public class MembershipFunctionOptimizer extends Algorithm {
+    private static final Logger log = LogManager.getLogger(MembershipFunctionOptimizer.class);
     protected Integer maxIterations;
     protected Integer populationSize;
     protected Double minTruthValue;
@@ -40,17 +51,32 @@ public class MembershipFunctionOptimizer extends Algorithm {
     protected HashMap<String, MembershipFunction[]> referenceValue;
     protected HashMap<Class<? extends MembershipFunction>, IMembershipFunctionRepair<? extends MembershipFunction>> repairOperators;
     protected HashMap<Class<? extends MembershipFunction>, IMembershipFunctionGenerator<? extends MembershipFunction>> generatorOperator;
+    protected HashMap<Class<? extends MembershipFunction>, IMembershipFunctionCrossover<? extends MembershipFunction>> crossoverOperator;
+    protected HashMap<Class<? extends MembershipFunction>, IMembershipFunctionMutation<? extends MembershipFunction>> mutationOperator;
     protected EvaluationAlgorithm evaluator;
     protected Random random;
+    protected EvaluationResult result;
 
-    public MembershipFunctionOptimizer(Operator predicate, Table table) {
+    public MembershipFunctionOptimizer(Operator predicate, Logic logic, Table table, Integer maxIterations,
+            Integer populationSize, Double minTruthValue, Double crossoverProbability, Double mutationProbability) {
         Objects.requireNonNull(predicate);
         Objects.requireNonNull(table);
         this.predicate = predicate;
         this.table = table;
+        this.logic = logic;
+        this.maxIterations = maxIterations;
+        this.populationSize = populationSize;
+        this.minTruthValue = minTruthValue;
+        this.crossoverRate = crossoverProbability;
+        this.mutationRate = mutationProbability;
         this.repairOperators = new HashMap<>();
-        this.register(FPG.class, new FPGRepair());
         this.generatorOperator = new HashMap<>();
+        this.crossoverOperator = new HashMap<>();
+        this.mutationOperator = new HashMap<>();
+        this.random = new Random();
+        this.register(FPG.class, new FPGGenerator());
+        this.register(FPG.class, new FPGRepair());
+        this.register(FPG.class, new FPGCrossover(crossoverProbability));
     }
 
     @Override
@@ -74,9 +100,9 @@ public class MembershipFunctionOptimizer extends Algorithm {
         // Generate boundaries
         generateBoundaries(states);
         // Generate random population
-        List<Chromosome> population = new ArrayList<>(populationSize);
+        List<MembershipFunctionChromosome> population = new ArrayList<>(populationSize);
         for (int i = 0; i < populationSize; i++) {
-            Chromosome sol = generate(states);
+            MembershipFunctionChromosome sol = generate(states);
             evaluate(states, sol);
             population.add(sol);
         }
@@ -89,14 +115,105 @@ public class MembershipFunctionOptimizer extends Algorithm {
         }
         while (currentIteration < maxIterations && population.get(maxValueIndex).getFitness() < minTruthValue) {
 
-            List<Chromosome> offspring = new ArrayList<>(offspringSize);
+            List<MembershipFunctionChromosome> offspring = new ArrayList<>(offspringSize);
             // Crossover
             for (int i = 0; i < offspringSize; i++) {
-
+                MembershipFunctionChromosome a = population.get(random.nextInt(populationSize));
+                MembershipFunctionChromosome b = population.get(random.nextInt(populationSize));
+                MembershipFunctionChromosome c = crossover(a, b, states);
+                mutation(c, states);
+                repair(c, states);
+                evaluate(states, c);
+                offspring.add(c);
             }
-
+            // Replace population
+            Collections.sort(offspring, Collections.reverseOrder());
+            Iterator<MembershipFunctionChromosome> iterator = offspring.iterator();
+            while (iterator.hasNext()) {
+                MembershipFunctionChromosome a = iterator.next();
+                for (int j = 0; j < populationSize; j++) {
+                    if (a.compareTo(population.get(j)) > 0) {
+                        population.set(j, a);
+                        iterator.remove();
+                        break;
+                    }
+                }
+            }
+            // find best
+            maxValueIndex = getMaxValueIndex(population);
         }
+
+        Operator operator = (Operator) predicate.copy();
+        MembershipFunctionChromosome solution = population.get(maxValueIndex);
+        ArrayList<State> _states = OperatorUtil.getNodesByClass(operator, State.class);
+        for (State state : states) {
+            State toUpd = _states.get(_states.indexOf(state));
+            toUpd.setMembershipFunction(solution.getFunction(state.getUuid()));
+        }
+        new EvaluationAlgorithm(operator, logic, table).execute();
         this.endTime = System.currentTimeMillis();
+        this.result = new EvaluationResult();
+        this.result.setStartTime(startTime);
+        this.result.setEndTime(endTime);
+        this.result.setPredicate(operator);
+        log.error("Best fitness {} for predicate {}", predicate.getFitness(), predicate.toString());
+    }
+
+    /**
+     * Repair operator
+     * 
+     * @param chromosome individual
+     * @param states     to work
+     */
+    private void repair(MembershipFunctionChromosome chromosome, List<State> states) {
+        for (int i = 0; i < states.size(); i++) {
+            Class<?> clazz = states.get(i).getMembershipFunction() == null ? FPG.class
+                    : states.get(i).getMembershipFunction().getClass();
+            MembershipFunction[] boundaries = this.referenceValue.get(states.get(i).getUuid());
+            chromosome.setFunction(i,
+                    this.repairOperators.get(clazz).execute(chromosome.getFunction(i), boundaries[0], boundaries[1]));
+        }
+    }
+
+    /**
+     * Mutation operator
+     * 
+     * @param chromosome individual
+     * @param states     to work
+     */
+    private void mutation(MembershipFunctionChromosome chromosome, List<State> states) {
+        for (int i = 0; i < states.size(); i++) {
+            Class<?> clazz = states.get(i).getMembershipFunction() == null ? FPG.class
+                    : states.get(i).getMembershipFunction().getClass();
+            if (this.mutationOperator.isEmpty() && random.nextDouble() <= this.mutationRate) {
+                MembershipFunction[] boundaries = this.referenceValue.get(states.get(i).getUuid());
+                chromosome.setFunction(i, this.generatorOperator.get(clazz).generate(boundaries[0], boundaries[1]));
+            } else {
+                chromosome.setFunction(i, this.mutationOperator.get(clazz).execute(chromosome.getFunction(i)));
+            }
+        }
+    }
+
+    /**
+     * Creates a new individual using a uniform cross given two parents. This method
+     * invoke crossoverOperator by class
+     * 
+     * @param a parent
+     * @param b parent
+     * @return child
+     */
+    private MembershipFunctionChromosome crossover(MembershipFunctionChromosome a, MembershipFunctionChromosome b,
+            List<State> states) {
+        MembershipFunctionChromosome c = new MembershipFunctionChromosome(states.size());
+        for (int i = 0; i < states.size(); i++) {
+            c.setId(i, states.get(i).getUuid());
+            Class<?> clazz = states.get(i).getMembershipFunction() == null ? FPG.class
+                    : states.get(i).getMembershipFunction().getClass();
+            MembershipFunction[] boundaries = this.referenceValue.get(states.get(i).getUuid());
+            c.setFunction(i, this.crossoverOperator.get(clazz).execute(a.getFunction(i), b.getFunction(i),
+                    boundaries[0], boundaries[1]));
+        }
+        return c;
     }
 
     /**
@@ -105,7 +222,7 @@ public class MembershipFunctionOptimizer extends Algorithm {
      * @param set to get the best index solution
      * @return
      */
-    private int getMaxValueIndex(List<Chromosome> set) {
+    private int getMaxValueIndex(List<MembershipFunctionChromosome> set) {
         int index = 0;
         for (int i = 1; i < set.size(); i++) {
             if (set.get(index).getFitness().compareTo(set.get(i).getFitness()) > 0) {
@@ -122,7 +239,7 @@ public class MembershipFunctionOptimizer extends Algorithm {
      * @param states   to work
      * @param solution to evaluete
      */
-    private void evaluate(List<State> states, Chromosome solution) {
+    private void evaluate(List<State> states, MembershipFunctionChromosome solution) {
         Operator operator = (Operator) predicate.copy();
         ArrayList<State> _states = OperatorUtil.getNodesByClass(operator, State.class);
         for (State state : states) {
@@ -133,14 +250,19 @@ public class MembershipFunctionOptimizer extends Algorithm {
         solution.setFitness(operator.getFitness());
     }
 
+    /**
+     * Generate boundaries by reference data
+     * 
+     * @param states to work
+     * @see IMembershipFunctionGenerator#generateBoundaries(Double...)
+     */
     private void generateBoundaries(List<State> states) {
-        // TODO: IMPLEMENTAR UN PATRON DE DISENO PARA LA GENERACION DE LIMITES
         for (State state : states) {
             Class<?> clazz = state.getMembershipFunction() == null ? FPG.class
                     : state.getMembershipFunction().getClass();
-            double min = 1, avg = 1, max = 1;
+            NumericColumn<?> column = table.numberColumn(state.getColName());
             this.referenceValue.put(state.getUuid(),
-                    this.generatorOperator.get(clazz).generateBoundaries(min, avg, max));
+                    this.generatorOperator.get(clazz).generateBoundaries(column.min(), column.mean(), column.max()));
         }
     }
 
@@ -152,8 +274,8 @@ public class MembershipFunctionOptimizer extends Algorithm {
      * @return new solution containing all functions to be optimized from the
      *         predicate
      */
-    private Chromosome generate(List<State> states) {
-        Chromosome chromosome = new Chromosome(states.size());
+    private MembershipFunctionChromosome generate(List<State> states) {
+        MembershipFunctionChromosome chromosome = new MembershipFunctionChromosome(states.size());
         for (int i = 0; i < states.size(); i++) {
             Class<?> clazz = states.get(i).getMembershipFunction() == null ? FPG.class
                     : states.get(i).getMembershipFunction().getClass();
@@ -189,66 +311,39 @@ public class MembershipFunctionOptimizer extends Algorithm {
         return this.generatorOperator.put(clazz, generatorFunction);
     }
 
-    @Override
-    public Result getResult() {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * Register new generator operator
+     * 
+     * @param clazz             to apply operator
+     * @param generatorFunction operator
+     * @return
+     */
+    public IMembershipFunctionCrossover<? extends MembershipFunction> register(
+            Class<? extends MembershipFunction> clazz,
+            IMembershipFunctionCrossover<? extends MembershipFunction> crossoverFunction) {
+        return this.crossoverOperator.put(clazz, crossoverFunction);
     }
 
     /**
-     * Auxiliary class that represents a solution in the algorithm. Each allele
-     * belonging to the chromosome represents a membership function to be
-     * discovered/optimized.
+     * Register new generator operator
+     * 
+     * @param clazz             to apply operator
+     * @param generatorFunction operator
+     * @return
      */
-    public static class Chromosome implements Comparable<Chromosome> {
-        protected Double fitness;
-        protected String[] id;
-        protected MembershipFunction[] functions;
+    public IMembershipFunctionMutation<? extends MembershipFunction> register(
+            Class<? extends MembershipFunction> clazz,
+            IMembershipFunctionMutation<? extends MembershipFunction> mutationFunction) {
+        return this.mutationOperator.put(clazz, mutationFunction);
+    }
 
-        public Chromosome(int size) {
-            this.id = new String[size];
-            this.functions = new MembershipFunction[size];
-        }
+    public void setRandom(Random random) {
+        this.random = random;
+    }
 
-        public MembershipFunction getFunction(String uuid) {
-            if (uuid == null)
-                return null;
-            for (int i = 0; i < functions.length; i++) {
-                if (id[i].equals(uuid)) {
-                    return functions[i];
-                }
-            }
-            return null;
-        }
-
-        public MembershipFunction getFunction(int index) {
-            return this.functions[index];
-        }
-
-        public void setFunction(int index, MembershipFunction value) {
-            this.functions[index] = value;
-        }
-
-        public String getId(int index) {
-            return this.id[index];
-        }
-
-        public void setId(int index, String value) {
-            this.id[index] = value;
-        }
-
-        public Double getFitness() {
-            return fitness;
-        }
-
-        public void setFitness(Double fitness) {
-            this.fitness = fitness;
-        }
-
-        @Override
-        public int compareTo(Chromosome o) {
-            return Double.compare(this.fitness, o.fitness);
-        }
+    @Override
+    public EvaluationResult getResult() {
+        return result;
     }
 
 }

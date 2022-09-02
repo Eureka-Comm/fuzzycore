@@ -1,11 +1,15 @@
 package com.castellanos94.jfuzzylogic.algorithm.impl;
 
 import com.castellanos94.jfuzzylogic.algorithm.IMembershipFunctionRepair;
+import com.castellanos94.jfuzzylogic.core.membershipfunction.MembershipFunction;
 import com.castellanos94.jfuzzylogic.core.membershipfunction.impl.FPG;
 
 public class FPGRepair implements IMembershipFunctionRepair<FPG> {
     @Override
-    public void execute(FPG function, FPG lower, FPG upper) {
+    public FPG execute(MembershipFunction f, MembershipFunction l, MembershipFunction u) {
+        FPG function = (FPG) f;
+        FPG lower = (FPG) l;
+        FPG upper = (FPG) u;
         int isSmallerThan = Double.compare(function.getBeta(), function.getGamma());
         if (isSmallerThan >= 0) {
             // generar uno nuevo entre el minimo y gama
@@ -24,6 +28,7 @@ public class FPGRepair implements IMembershipFunctionRepair<FPG> {
         if (Double.compare(function.getM(), 1.0) > 0 || Double.compare(function.getM(), 0.0) < 0) {
             function.setM(Math.random());
         }
+        return function;
     }
 
 }
