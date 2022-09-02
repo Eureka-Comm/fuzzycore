@@ -15,8 +15,8 @@ public class Imp extends Operator {
 
     public Imp(AElement antecedent, AElement consequent) {
         this();
-        Objects.nonNull(antecedent);
-        Objects.nonNull(consequent);
+        Objects.requireNonNull(antecedent);
+        Objects.requireNonNull(consequent);
         this.children.add(antecedent);
         this.children.add(consequent);
     }

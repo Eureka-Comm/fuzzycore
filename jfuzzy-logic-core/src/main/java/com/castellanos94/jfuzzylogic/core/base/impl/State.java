@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class State extends AElement {
     @Exclude
-    public String uuid;
+    protected String uuid;
 
     protected String colName;
     protected MembershipFunction membershipFunction;
