@@ -5,6 +5,6 @@ import com.castellanos94.jfuzzylogic.core.membershipfunction.MembershipFunction;
 /**
  * Repair Membership function interface
  */
-public interface IRepairFunction<T extends MembershipFunction> {
+public interface IMembershipFunctionRepair<T extends MembershipFunction> {
     void execute(T function, T lower, T upper);
 }

@@ -23,7 +23,7 @@ public class And extends Operator {
     }
 
     @Override
-    public AElement copy() {
+    public And copy() {
         And cpy = new And();
         this.children.forEach(c -> cpy.add(c.copy()));
         cpy.setEditable(editable);

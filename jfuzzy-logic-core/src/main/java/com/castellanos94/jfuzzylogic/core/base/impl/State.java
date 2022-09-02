@@ -21,28 +21,31 @@ public class State extends AElement {
     protected MembershipFunction membershipFunction;
 
     public State(String colName) {
-        this(colName, colName, null, false);
+        this(colName, colName, null, false, null);
     }
 
     public State(String label, String colName) {
-        this(label, colName, null, false);
+        this(label, colName, null, false, null);
     }
 
     public State(String label, String colName, MembershipFunction function) {
-        this(label, colName, function, false);
+        this(label, colName, function, false, null);
     }
 
-    protected State(String label, String colName, MembershipFunction function, boolean editable) {
+    protected State(String label, String colName, MembershipFunction function, boolean editable, String uuid) {
         this.label = label;
         this.colName = colName;
         this.membershipFunction = function == null ? null : function.copy();
         this.editable = editable;
-        this.uuid = UUID.randomUUID().toString();
+        if (uuid == null)
+            this.uuid = UUID.randomUUID().toString();
+        else
+            this.uuid = uuid;
     }
 
     @Override
     public State copy() {
-        return new State(label, colName, membershipFunction, editable);
+        return new State(label, colName, membershipFunction, editable, uuid);
     }
 
     @Override

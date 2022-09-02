@@ -1,9 +1,9 @@
 package com.castellanos94.jfuzzylogic.algorithm.impl;
 
-import com.castellanos94.jfuzzylogic.algorithm.IRepairFunction;
+import com.castellanos94.jfuzzylogic.algorithm.IMembershipFunctionRepair;
 import com.castellanos94.jfuzzylogic.core.membershipfunction.impl.FPG;
 
-public class FPGRepair implements IRepairFunction<FPG> {
+public class FPGRepair implements IMembershipFunctionRepair<FPG> {
     @Override
     public void execute(FPG function, FPG lower, FPG upper) {
         int isSmallerThan = Double.compare(function.getBeta(), function.getGamma());
