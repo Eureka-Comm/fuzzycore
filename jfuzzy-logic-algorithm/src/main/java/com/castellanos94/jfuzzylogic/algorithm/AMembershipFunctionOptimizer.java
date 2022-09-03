@@ -290,4 +290,22 @@ public abstract class AMembershipFunctionOptimizer {
      * @return copy
      */
     public abstract AMembershipFunctionOptimizer copy();
+
+    public Map<Class<? extends MembershipFunction>, IMembershipFunctionRepair<? extends MembershipFunction>> getRepairOperators() {
+        return repairOperators;
+    }
+
+    public Map<Class<? extends MembershipFunction>, IMembershipFunctionGenerator<? extends MembershipFunction>> getGeneratorOperator() {
+        return generatorOperator;
+    }
+
+    public Map<Class<? extends MembershipFunction>, IMembershipFunctionCrossover<? extends MembershipFunction>> getCrossoverOperator() {
+        return crossoverOperator;
+    }
+
+    public Map<Class<? extends MembershipFunction>, IMembershipFunctionMutation<? extends MembershipFunction>> getMutationOperator() {
+        return mutationOperator;
+    }
+
+    
 }

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.checkerframework.checker.units.qual.K;
 
 import com.castellanos94.jfuzzylogic.algorithm.AMembershipFunctionOptimizer;
 import com.castellanos94.jfuzzylogic.algorithm.MembershipFunctionChromosome;
@@ -234,7 +235,10 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
     public MembershipFunctionOptimizer copy() {
         MembershipFunctionOptimizer cpy = new MembershipFunctionOptimizer(logic, table, maxIterations, populationSize,
                 minTruthValue, crossoverRate, mutationRate);
-
+        getGeneratorOperator().forEach((k,v)->cpy.register(k, v));
+        getCrossoverOperator().forEach((k,v)->cpy.register(k, v));
+        getMutationOperator().forEach((k,v)->cpy.register(k, v));
+        getRepairOperators().forEach((k,v)->cpy.register(k, v));        
         return cpy;
     }
 
