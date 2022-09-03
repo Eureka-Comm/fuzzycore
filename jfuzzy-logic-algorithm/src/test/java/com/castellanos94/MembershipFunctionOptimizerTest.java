@@ -64,6 +64,6 @@ public class MembershipFunctionOptimizerTest {
         Logic logic = LogicBuilder.newBuilder(LogicType.GMBC).create();
         MembershipFunctionOptimizer optimizer = new MembershipFunctionOptimizer(logic, table, 100, 20, 0.98,
                 0.9, 0.1);
-        Operator op = optimizer.execute(predicate);
+        optimizer.execute(predicate);
     }
 }

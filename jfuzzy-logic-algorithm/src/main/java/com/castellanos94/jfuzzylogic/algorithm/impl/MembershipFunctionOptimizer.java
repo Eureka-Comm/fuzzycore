@@ -13,7 +13,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.castellanos94.jfuzzylogic.algorithm.AMembershipFunctionOptimizer;
-import com.castellanos94.jfuzzylogic.algorithm.JFuzzyLogicAlgorithmError;
 import com.castellanos94.jfuzzylogic.algorithm.MembershipFunctionChromosome;
 import com.castellanos94.jfuzzylogic.core.OperatorUtil;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
