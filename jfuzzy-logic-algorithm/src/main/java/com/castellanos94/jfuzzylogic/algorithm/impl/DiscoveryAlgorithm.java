@@ -1,8 +1,17 @@
 package com.castellanos94.jfuzzylogic.algorithm.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.castellanos94.jfuzzylogic.algorithm.AMembershipFunctionOptimizer;
 import com.castellanos94.jfuzzylogic.algorithm.Algorithm;
@@ -21,6 +30,7 @@ import tech.tablesaw.api.Table;
  * @apiNote {@link MembershipFunctionOptimizer} default optimizer
  */
 public class DiscoveryAlgorithm extends Algorithm {
+    private static final Logger log = LogManager.getLogger(DiscoveryAlgorithm.class);
     /**
      * Predicate guide
      */
@@ -84,6 +94,8 @@ public class DiscoveryAlgorithm extends Algorithm {
 
     protected AMembershipFunctionOptimizer optimizer;
 
+    protected boolean run;
+
     /**
      * Default constructor
      * 
@@ -128,6 +140,7 @@ public class DiscoveryAlgorithm extends Algorithm {
         this.adjMutationRate = adjMutationRate;
         this.adjPopulationSize = adjPopulationSize;
         this.adjMaxIteration = adjMaxIteration;
+        this.run = true;
         this.optimizer = new MembershipFunctionOptimizer(logic, table, adjMaxIteration, adjPopulationSize,
                 adjMinTruthValue, adjCrossoverRate, adjMutationRate);
     }
@@ -135,18 +148,181 @@ public class DiscoveryAlgorithm extends Algorithm {
     @Override
     public void execute() {
         this.startTime = System.currentTimeMillis();
-        this.discoveryPredicates = new ArrayList<>(this.maximumNumberResult);
+        this.discoveryPredicates = new ArrayList<>();
         ArrayList<Generator> generators = OperatorUtil.getNodesByClass(predicate, Generator.class);
         if (generators.isEmpty()) {
             this.discoveryPredicates.add(optimizer.execute(predicate).copy());
+        } else {
+            Operator[] population = new Operator[populationSize];
+            // Generate random population
+            for (int i = 0; i < populationSize; i++) {
+                population[i] = createRandomIndividual(generators, i);
+            }
+            // Evaluate initial populaiton
+            Arrays.parallelSetAll(population, idx -> {
+                return optimizer.copy().execute(population[idx]).copy();
+            });
+            Arrays.sort(population);
+            log.info("End time for evalution of random population: {} ms", (System.currentTimeMillis() - startTime));
+            Set<Integer> indexToReplace = new HashSet<>();
+            for (int i = 0; i < populationSize; i++) {
+                if (population[i].getFitness() >= minTruthValue) {
+                    if (!expressionExists(population[i].toString(), discoveryPredicates)) {
+                        discoveryPredicates.add(population[i].copy());
+                        indexToReplace.add(i);
+                    } else {
+                        // Replace if better
+                        for (int j = 0; j < discoveryPredicates.size(); j++) {
+                            if (population[i].compareTo(discoveryPredicates.get(j)) > 0) {
+                                discoveryPredicates.set(j, population[i].copy());
+                                indexToReplace.add(i);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            long elapsedTime = System.currentTimeMillis() - startTime;
+            int offspringSize = populationSize / 2;
+            while (offspringSize % 2 != 0) {
+                offspringSize++;
+            }
+            // check stop condition
+            int aIndex, bIndex;
+            Operator a, b, c;
+            Operator[] offspring = new Operator[offspringSize];
+            int currentIteration = 1;
+            while (discoveryPredicates.size() < maximumNumberResult && elapsedTime < maximumTime && run) {
+                log.error("Current iteration {}, time {} ms", currentIteration, elapsedTime);
+                if (!indexToReplace.isEmpty()) {
+                    Operator[] nOperators = new Operator[indexToReplace.size()];
+                    for (Integer idx : indexToReplace) {
+                        nOperators[idx] = createRandomIndividual(generators, idx);
+                    }
+                    Arrays.parallelSetAll(nOperators, idx -> {
+                        return optimizer.copy().execute(nOperators[idx]).copy();
+                    });
+                    indexToReplace.clear();
+                }
+                // offspring generation
+                for (int i = 0; i < offspringSize; i++) {
+                    // Random parent selection
+                    aIndex = random.nextInt(populationSize);
+                    do {
+                        bIndex = random.nextInt(populationSize);
+                    } while (aIndex == bIndex);
+                    // crossover
+                    a = population[aIndex];
+                    b = population[bIndex];
+                    c = crossover(a, b);
+                    c = mutation(c);
+                    offspring[i] = c;
+                }
+                // evaluate offspring
+                Arrays.parallelSetAll(offspring, idx -> {
+                    return optimizer.copy().execute(offspring[idx]).copy();
+                });
+                // Replace population
+                for (int i = 0; i < offspringSize; i++) {
+                    a = offspring[i];
+                    for (int j = 0; j < populationSize; j++) {
+                        b = population[j];
+                        if (a.compareTo(b) > 0) {
+                            population[j] = offspring[i].copy();
+                            break;
+                        }
+                    }
+                }
+                // Pass to discovery result
+                HashMap<String, Integer> expressionMap = new HashMap<>();
+                for (int i = 0; i < populationSize; i++) {
+                    String exp = population[i].toString();
+                    expressionMap.put(exp, expressionMap.getOrDefault(exp, 0) + 1);
+                    if (population[i].getFitness() >= minTruthValue) {
+                        if (!expressionExists(exp, discoveryPredicates)) {
+                            discoveryPredicates.add(population[i].copy());
+                            indexToReplace.add(i);
+                        } else {
+                            // Replace if better
+                            for (int j = 0; j < discoveryPredicates.size(); j++) {
+                                if (population[i].compareTo(discoveryPredicates.get(j)) > 0) {
+                                    discoveryPredicates.set(j, population[i].copy());
+                                    indexToReplace.add(i);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                // We check if there is no stagnation in the search
+                expressionMap.forEach((k, v) -> {
+                    if (v > 1) {
+                        log.error("Expression {} - {}", k, v);
+                        if (v > populationSize / 5 && indexToReplace.size() > populationSize / 2) {
+                            int cnt = 0;
+                            while (cnt < populationSize / 5) {
+                                if (indexToReplace.add(random.nextInt(populationSize))) {
+                                    cnt++;
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // update stop condition
+                elapsedTime = System.currentTimeMillis() - startTime;
+            }
+
+            if (this.discoveryPredicates.size() < 2) {
+                int size = Math.min(10 - this.discoveryPredicates.size(), populationSize);
+                log.error("Few results exist {}, copying the best ones {}", this.discoveryPredicates, size);
+                Arrays.sort(population);
+                for (int i = 0; i < size; i++) {
+                    this.discoveryPredicates.add(population[i]);
+                }
+            }
         }
         this.endTime = System.currentTimeMillis();
+        log.error("Discovery Results {}, elapsed time {} ms", this.discoveryPredicates.size(), this.getComputeTime());
+    }
+
+    private Operator mutation(Operator c) {
+        return null;
+    }
+
+    private Operator crossover(Operator a, Operator b) {
+        return null;
+    }
+
+    protected void setRun(boolean flag) {
+        this.run = flag;
+    }
+
+    private boolean expressionExists(String expression, List<Operator> set) {
+        if (set.isEmpty())
+            return false;
+        Iterator<Operator> iterator = set.iterator();
+        String exp;
+        while (iterator.hasNext()) {
+            exp = iterator.next().toString();
+            if (exp.equals(expression)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Operator createRandomIndividual(List<Generator> generators, int index) {
+        return null;
     }
 
     @Override
     public DiscoveryResult getResult() {
-        // TODO Auto-generated method stub
-        return null;
+        DiscoveryResult result = new DiscoveryResult();
+        result.setData(new LinkedList<>(discoveryPredicates));
+        result.setStartTime(startTime);
+        result.setEndTime(endTime);
+        return result;
     }
 
     public DiscoveryAlgorithm setRandom(Random random) {

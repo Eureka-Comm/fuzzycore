@@ -59,6 +59,6 @@ public abstract class Operator extends AElement implements Comparable<Operator>,
 
     @Override
     public Operator copy() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        throw new UnsupportedOperationException("Not implemented yet " + getClass().getSimpleName());
     }
 }

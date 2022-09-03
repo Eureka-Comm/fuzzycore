@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.units.qual.K;
 
 import com.castellanos94.jfuzzylogic.algorithm.AMembershipFunctionOptimizer;
 import com.castellanos94.jfuzzylogic.algorithm.MembershipFunctionChromosome;
@@ -120,18 +119,24 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
         while (offspringSize % 2 != 0) {
             offspringSize++;
         }
+        int aIndex, bIndex;
+        MembershipFunctionChromosome a, b, c;
+        List<MembershipFunctionChromosome> offspring;
         while (currentIteration < maxIterations && population.get(maxValueIndex).getFitness() < minTruthValue) {
             if (Utils.equals(population.get(maxValueIndex).getFitness(), minTruthValue)) {
                 break;
             }
-            // log.error("Iteration {}, fitness
-            // {}",currentIteration,population.get(maxValueIndex).getFitness());
-            List<MembershipFunctionChromosome> offspring = new ArrayList<>(offspringSize);
+            offspring = new ArrayList<>(offspringSize);
             // Crossover
             for (int i = 0; i < offspringSize; i++) {
-                MembershipFunctionChromosome a = population.get(random.nextInt(populationSize));
-                MembershipFunctionChromosome b = population.get(random.nextInt(populationSize));
-                MembershipFunctionChromosome c = crossover(a, b);
+                // Random parent selection
+                aIndex = random.nextInt(populationSize);
+                do {
+                    bIndex = random.nextInt(populationSize);
+                } while (aIndex == bIndex);
+                a = population.get(aIndex);
+                b = population.get(bIndex);
+                c = crossover(a, b);
                 mutation(c);
                 repair(c, states);
                 evaluate(states, c);
@@ -141,10 +146,10 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
             Collections.sort(offspring, Collections.reverseOrder());
             Iterator<MembershipFunctionChromosome> iterator = offspring.iterator();
             while (iterator.hasNext()) {
-                MembershipFunctionChromosome a = iterator.next();
+                MembershipFunctionChromosome tmp = iterator.next();
                 for (int j = 0; j < populationSize; j++) {
-                    if (a.compareTo(population.get(j)) > 0) {
-                        population.set(j, a);
+                    if (tmp.compareTo(population.get(j)) > 0) {
+                        population.set(j, tmp);
                         iterator.remove();
                         break;
                     }
@@ -235,10 +240,10 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
     public MembershipFunctionOptimizer copy() {
         MembershipFunctionOptimizer cpy = new MembershipFunctionOptimizer(logic, table, maxIterations, populationSize,
                 minTruthValue, crossoverRate, mutationRate);
-        getGeneratorOperator().forEach((k,v)->cpy.register(k, v));
-        getCrossoverOperator().forEach((k,v)->cpy.register(k, v));
-        getMutationOperator().forEach((k,v)->cpy.register(k, v));
-        getRepairOperators().forEach((k,v)->cpy.register(k, v));        
+        getGeneratorOperator().forEach((k, v) -> cpy.register(k, v));
+        getCrossoverOperator().forEach((k, v) -> cpy.register(k, v));
+        getMutationOperator().forEach((k, v) -> cpy.register(k, v));
+        getRepairOperators().forEach((k, v) -> cpy.register(k, v));
         return cpy;
     }
 
