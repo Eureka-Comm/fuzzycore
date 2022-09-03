@@ -27,6 +27,9 @@ public class Not extends Operator {
         this.children.forEach(c -> cpy.add(c.copy()));
         cpy.setEditable(editable);
         cpy.setFitness(fitness);
+        cpy.setLabel(label);
+        cpy.setDescription(description);
+        
         return cpy;
     }
 

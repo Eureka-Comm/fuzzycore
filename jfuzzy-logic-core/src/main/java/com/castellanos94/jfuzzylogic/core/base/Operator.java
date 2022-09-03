@@ -40,7 +40,7 @@ public abstract class Operator extends AElement implements Comparable<Operator>,
     }
 
     public void setFitness(Double fitness) {
-        this.fitness = fitness;                     
+        this.fitness = fitness;
     }
 
     @Override
@@ -55,5 +55,10 @@ public abstract class Operator extends AElement implements Comparable<Operator>,
         });
         buffer.append(")");
         return buffer.toString();
+    }
+
+    @Override
+    public Operator copy() {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 }
