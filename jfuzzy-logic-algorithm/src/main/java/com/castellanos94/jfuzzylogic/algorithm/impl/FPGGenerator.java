@@ -13,7 +13,6 @@ import com.castellanos94.jfuzzylogic.core.membershipfunction.impl.FPG;
  * @see IMembershipFunctionGenerator
  */
 public class FPGGenerator implements IMembershipFunctionGenerator<FPG> {
-    public static final double DELTA = 0.00001;
     protected Random random;
 
     public FPGGenerator() {
@@ -36,16 +35,16 @@ public class FPGGenerator implements IMembershipFunctionGenerator<FPG> {
         FPG fpg = new FPG();
         FPG l = (FPG) lower;
         FPG u = (FPG) upper;
-        double beta = random.doubles(l.getBeta(), u.getGamma()).findAny().getAsDouble();
-        double gamma = random.doubles(beta, u.getGamma()).findAny().getAsDouble();
-        while (Math.abs(gamma - beta) <= DELTA) {
-            beta = random.doubles(l.getBeta(), u.getGamma()).findAny().getAsDouble();
-            gamma = random.doubles(beta, u.getGamma()).findAny().getAsDouble();
+        double beta = Utils.randomNumber(random, l.getBeta(), u.getGamma());
+        double gamma = Utils.randomNumber(random, beta, u.getGamma());
+        while (Utils.equals(beta, gamma)) {
+            beta = Utils.randomNumber(random, l.getBeta(), u.getGamma());
+            gamma = Utils.randomNumber(random, beta, u.getGamma());
         }
         fpg.setBeta(beta);
         fpg.setGamma(gamma);
         fpg.setEditable(true);
-        fpg.setM(random.nextInt(1001) / 1001.0);
+        fpg.setM(Utils.randomNumber(random));
         return fpg;
     }
 
