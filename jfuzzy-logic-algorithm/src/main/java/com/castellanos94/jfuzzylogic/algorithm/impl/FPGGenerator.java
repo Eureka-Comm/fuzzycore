@@ -31,7 +31,7 @@ public class FPGGenerator implements IMembershipFunctionGenerator<FPG> {
     }
 
     @Override
-    public FPG generate(MembershipFunction lower, MembershipFunction upper) {
+    public FPG generate(MembershipFunction lower, MembershipFunction upper, MembershipFunction reference) {
         FPG fpg = new FPG();
         FPG l = (FPG) lower;
         FPG u = (FPG) upper;

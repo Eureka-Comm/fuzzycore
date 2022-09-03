@@ -38,20 +38,19 @@ public class App {
                         new State("free_sulfur_dioxide"), new State("sulphates"), new State("residual_sugar")),
                 new State("high quality", "quality", new Sigmoid(5.5, 4.)));
         Logic logic = LogicBuilder.newBuilder(LogicType.GMBC).create();
-        MembershipFunctionOptimizer optimizer = new MembershipFunctionOptimizer(predicate, logic, table, 100, 20, 0.98,
+        MembershipFunctionOptimizer optimizer = new MembershipFunctionOptimizer( logic, table, 100, 20, 0.98,
                 0.9, 0.1);
-        optimizer.execute();
-        EvaluationResult evaluationResult = optimizer.getResult();
-        log.error("Elapsed time {} ms", (evaluationResult.getEndTime() - evaluationResult.getStartTime()));
+        Operator op = optimizer.execute(predicate);
+        log.error("Elapsed time {} ms", optimizer.getComputeTime());
         log.error("Original: {} - {}", predicate.getFitness(), predicate.toString());
-        log.error("Result : {} - {}", evaluationResult.getPredicate().getFitness(),
-                evaluationResult.getPredicate().toString());
+        log.error("Result : {} - {}", op.getFitness(),
+                op.toString());
         log.error("States");
-        OperatorUtil.getNodesByClass(evaluationResult.getPredicate(), State.class).forEach(s -> {
+        OperatorUtil.getNodesByClass(op, State.class).forEach(s -> {
             log.error("{}", s);
         });
         log.error("Check");
-        Operator p = (Operator) evaluationResult.getPredicate().copy();
+        Operator p = (Operator) op.copy();
         log.error("Result : {} - {}", p.getFitness(),
                 p.toString());
         EvaluationAlgorithm algorithm = new EvaluationAlgorithm(p, logic, table);

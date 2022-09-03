@@ -20,9 +20,10 @@ public interface IMembershipFunctionGenerator<T extends MembershipFunction> {
     /**
      * Generates a new membership function using the reference boundaries
      * 
-     * @param lower function
-     * @param upper function
+     * @param lower     function
+     * @param upper     function
+     * @param reference if not null, using guide
      * @return new function
      */
-    public T generate(MembershipFunction lower, MembershipFunction upper);
+    public T generate(MembershipFunction lower, MembershipFunction upper, MembershipFunction reference);
 }

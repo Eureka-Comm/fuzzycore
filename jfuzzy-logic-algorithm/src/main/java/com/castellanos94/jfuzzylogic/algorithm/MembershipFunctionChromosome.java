@@ -76,5 +76,9 @@ public class MembershipFunctionChromosome implements Comparable<MembershipFuncti
     public String toString() {
         return "MembershipFunctionChromosome [fitness=" + fitness + ", functions=" + Arrays.toString(functions) + "]";
     }
-    
+
+    public int getSize() {
+        return this.functions.length;
+    }
+
 }
