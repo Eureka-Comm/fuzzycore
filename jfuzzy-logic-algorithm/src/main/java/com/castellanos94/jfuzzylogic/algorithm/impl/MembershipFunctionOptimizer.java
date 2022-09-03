@@ -33,6 +33,7 @@ import tech.tablesaw.api.Table;
  * @see FPGGenerator FPG generator operator default
  */
 public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
+    @SuppressWarnings("unused")
     private static final Logger log = LogManager.getLogger(MembershipFunctionOptimizer.class);
     protected Integer maxIterations;
     protected Integer populationSize;
@@ -143,16 +144,13 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
             currentIteration++;
         }
 
-        Operator operator = (Operator) predicate.copy();
         MembershipFunctionChromosome solution = population.get(maxValueIndex);
-        ArrayList<State> _states = OperatorUtil.getNodesByClass(operator, State.class);
         for (State state : states) {
-            State toUpd = _states.get(_states.indexOf(state));
-            toUpd.setMembershipFunction(solution.getFunction(state.getUuid()));
+            state.setMembershipFunction(solution.getFunction(state.getUuid()));
         }
-        new EvaluationAlgorithm(operator, logic, table).execute();
+        new EvaluationAlgorithm(predicate, logic, table).execute();
         this.endTime = System.currentTimeMillis();
-        return operator;
+        return predicate;
     }
 
     /**
@@ -185,14 +183,15 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
 
     @Override
     protected void evaluate(List<State> states, MembershipFunctionChromosome solution) {
-        Operator operator = (Operator) predicate.copy();
-        ArrayList<State> _states = OperatorUtil.getNodesByClass(operator, State.class);
+        // Operator operator = (Operator) predicate.copy();
+        // ArrayList<State> _states = OperatorUtil.getNodesByClass(operator,
+        // State.class);
         for (State state : states) {
-            State toUpd = _states.get(_states.indexOf(state));
-            toUpd.setMembershipFunction(solution.getFunction(state.getUuid()));
+            // State toUpd = _states.get(_states.indexOf(state));
+            state.setMembershipFunction(solution.getFunction(state.getUuid()));
         }
-        new EvaluationAlgorithm(operator, logic, table).execute();
-        solution.setFitness(operator.getFitness());
+        new EvaluationAlgorithm(predicate, logic, table).execute();
+        solution.setFitness(predicate.getFitness());
     }
 
     @Override
