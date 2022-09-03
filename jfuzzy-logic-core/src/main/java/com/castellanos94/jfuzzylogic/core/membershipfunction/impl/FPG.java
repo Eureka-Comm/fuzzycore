@@ -5,12 +5,10 @@ import com.castellanos94.jfuzzylogic.core.membershipfunction.MembershipFunction;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
-@ToString(callSuper = true)
 public class FPG extends MembershipFunction {
     @EqualsAndHashCode.Include
     protected Double beta;
@@ -58,6 +56,11 @@ public class FPG extends MembershipFunction {
     @Override
     public Double[] toArray() {
         return new Double[] { beta, gamma, m };
+    }
+
+    @Override
+    public String toString() {
+        return "FPG [beta=" + beta + ", gamma=" + gamma + ", m=" + m + ", editable=" + editable + "]";
     }
 
 }

@@ -114,7 +114,7 @@ public class MembershipFunctionOptimizer extends Algorithm {
             offspringSize++;
         }
         while (currentIteration < maxIterations && population.get(maxValueIndex).getFitness() < minTruthValue) {
-
+            log.error("Iteration {} : {}", currentIteration, population.get(maxValueIndex));
             List<MembershipFunctionChromosome> offspring = new ArrayList<>(offspringSize);
             // Crossover
             for (int i = 0; i < offspringSize; i++) {
@@ -141,6 +141,7 @@ public class MembershipFunctionOptimizer extends Algorithm {
             }
             // find best
             maxValueIndex = getMaxValueIndex(population);
+            currentIteration++;
         }
 
         Operator operator = (Operator) predicate.copy();
@@ -156,7 +157,7 @@ public class MembershipFunctionOptimizer extends Algorithm {
         this.result.setStartTime(startTime);
         this.result.setEndTime(endTime);
         this.result.setPredicate(operator);
-        log.error("Best fitness {} for predicate {}", predicate.getFitness(), predicate.toString());
+        log.error("Best fitness {} for predicate {}", operator.getFitness(), predicate.toString());
     }
 
     /**
@@ -185,7 +186,7 @@ public class MembershipFunctionOptimizer extends Algorithm {
         for (int i = 0; i < states.size(); i++) {
             Class<?> clazz = states.get(i).getMembershipFunction() == null ? FPG.class
                     : states.get(i).getMembershipFunction().getClass();
-            if (this.mutationOperator.isEmpty() && random.nextDouble() <= this.mutationRate) {
+            if (this.mutationOperator.isEmpty() || random.nextDouble() <= this.mutationRate) {
                 MembershipFunction[] boundaries = this.referenceValue.get(states.get(i).getUuid());
                 chromosome.setFunction(i, this.generatorOperator.get(clazz).generate(boundaries[0], boundaries[1]));
             } else {
@@ -257,6 +258,7 @@ public class MembershipFunctionOptimizer extends Algorithm {
      * @see IMembershipFunctionGenerator#generateBoundaries(Double...)
      */
     private void generateBoundaries(List<State> states) {
+        this.referenceValue = new HashMap<>();
         for (State state : states) {
             Class<?> clazz = state.getMembershipFunction() == null ? FPG.class
                     : state.getMembershipFunction().getClass();

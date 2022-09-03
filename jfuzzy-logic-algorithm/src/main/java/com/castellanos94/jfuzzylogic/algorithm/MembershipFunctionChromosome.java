@@ -1,5 +1,7 @@
 package com.castellanos94.jfuzzylogic.algorithm;
 
+import java.util.Arrays;
+
 import com.castellanos94.jfuzzylogic.core.membershipfunction.MembershipFunction;
 
 /**
@@ -70,4 +72,9 @@ public class MembershipFunctionChromosome implements Comparable<MembershipFuncti
         return new MembershipFunctionChromosome(this);
     }
 
+    @Override
+    public String toString() {
+        return "MembershipFunctionChromosome [fitness=" + fitness + ", functions=" + Arrays.toString(functions) + "]";
+    }
+    
 }
