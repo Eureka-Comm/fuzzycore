@@ -43,7 +43,15 @@ public class FPGRepair implements IMembershipFunctionRepair<FPG> {
         if (Double.compare(function.getGamma(), upper.getGamma()) > 0) {
             function.setGamma(Utils.randomNumber(random, function.getBeta(), upper.getGamma()));
         }
-        if (Double.compare(function.getM(), 1.0) > 0 || Double.compare(function.getM(), 0.0) < 0) {
+        if (Utils.equals(lower.getBeta(), upper.getBeta())) {
+            function.setBeta(lower.getBeta());
+        }
+        if (Utils.equals(lower.getGamma(), upper.getGamma())) {
+            function.setGamma(lower.getGamma());
+        }
+        if (Utils.equals(lower.getM(), upper.getM())) {
+            function.setM(lower.getM());
+        } else if (Double.compare(function.getM(), 1.0) > 0 || Double.compare(function.getM(), 0.0) < 0) {
             function.setM(Utils.randomNumber(random));
         }
         return function;

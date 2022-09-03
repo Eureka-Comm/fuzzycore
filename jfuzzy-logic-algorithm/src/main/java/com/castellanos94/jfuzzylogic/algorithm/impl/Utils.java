@@ -14,6 +14,9 @@ public class Utils {
      * @return
      */
     public static double randomNumber(Random random, double lower, double upper) {
+        if (equals(lower, upper)) {
+            return lower;
+        }
         return random.doubles(lower, upper).findAny().getAsDouble();
     }
 

@@ -112,7 +112,8 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
             if (Utils.equals(population.get(maxValueIndex).getFitness(), minTruthValue)) {
                 break;
             }
-            //log.error("Iteration {}, fitness {}",currentIteration,population.get(maxValueIndex).getFitness());
+            // log.error("Iteration {}, fitness
+            // {}",currentIteration,population.get(maxValueIndex).getFitness());
             List<MembershipFunctionChromosome> offspring = new ArrayList<>(offspringSize);
             // Crossover
             for (int i = 0; i < offspringSize; i++) {
@@ -162,8 +163,7 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
      */
     private void repair(MembershipFunctionChromosome chromosome, List<State> states) {
         for (int i = 0; i < states.size(); i++) {
-            Class<?> clazz = states.get(i).getMembershipFunction() == null ? FPG.class
-                    : states.get(i).getMembershipFunction().getClass();
+            Class<? extends MembershipFunction> clazz = this.stateIdByClass.get(chromosome.getId(i));
             MembershipFunction[] boundaries = this.boundaries.get(states.get(i).getUuid());
             chromosome.setFunction(i,
                     this.repairOperators.get(clazz).execute(chromosome.getFunction(i), boundaries[0], boundaries[1]));
@@ -176,8 +176,7 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
             Class<? extends MembershipFunction> clazz = this.stateIdByClass.get(chromosome.getId(i));
             if (this.mutationOperator.isEmpty() || random.nextDouble() <= this.mutationRate) {
                 MembershipFunction[] boundary = this.boundaries.get(chromosome.getId(i));
-                chromosome.setFunction(i, this.generatorOperator.get(clazz).generate(boundary[0], boundary[1],
-                        states.get(i).getMembershipFunction()));
+                chromosome.setFunction(i, this.generatorOperator.get(clazz).generate(boundary[0], boundary[1]));
             } else {
                 chromosome.setFunction(i, this.mutationOperator.get(clazz).execute(chromosome.getFunction(i)));
             }
@@ -203,7 +202,8 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
             Class<?> clazz = this.stateIdByClass.get(state.getUuid());
             NumericColumn<?> column = table.numberColumn(state.getColName());
             this.boundaries.put(state.getUuid(),
-                    this.generatorOperator.get(clazz).generateBoundaries(column.min(), column.mean(), column.max()));
+                    this.generatorOperator.get(clazz).generateBoundaries(state.getMembershipFunction(), column.min(),
+                            column.mean(), column.max()));
         }
     }
 
@@ -214,7 +214,7 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
             Class<?> clazz = this.stateIdByClass.get(states.get(i).getUuid());
             MembershipFunction[] ref = this.boundaries.get(states.get(i).getUuid());
             chromosome.setFunction(i,
-                    this.generatorOperator.get(clazz).generate(ref[0], ref[1], states.get(i).getMembershipFunction()));
+                    this.generatorOperator.get(clazz).generate(ref[0], ref[1]));
             chromosome.setId(i, states.get(i).getUuid());
         }
         return chromosome;

@@ -24,14 +24,42 @@ public class FPGGenerator implements IMembershipFunctionGenerator<FPG> {
     }
 
     @Override
-    public FPG[] generateBoundaries(Double... referenceValues) {
-        FPG lower = new FPG(referenceValues[0], referenceValues[0], 0.0);
-        FPG uppper = new FPG(referenceValues[2], referenceValues[2], 1.0);
-        return new FPG[] { lower, uppper };
+    public FPG[] generateBoundaries(MembershipFunction function, Double... referenceValues) {
+        FPG lower = new FPG(), upper = new FPG();
+        lower.setM(0.0);
+        upper.setM(1.0);
+        if (function != null) {
+            FPG r = (FPG) function;
+            if (r.getBeta() != null) {
+                lower.setBeta(r.getBeta());
+                upper.setBeta(r.getBeta());
+            }
+            if (r.getGamma() != null) {
+                lower.setGamma(r.getGamma());
+                upper.setGamma(r.getGamma());
+            }
+            if (r.getM() != null) {
+                lower.setM(r.getM());
+                upper.setM(r.getM());
+            }
+        }
+        if (lower.getBeta() == null) {
+            lower.setBeta(referenceValues[0]);
+            upper.setBeta(referenceValues[2]);
+        }
+        if (lower.getGamma() == null) {
+            lower.setGamma(referenceValues[0]);
+            upper.setGamma(referenceValues[2]);
+        }
+        if (lower.getM() == null) {
+            lower.setM(0.0);
+            upper.setM(1.0);
+        }
+        return new FPG[] { lower, upper };
     }
 
     @Override
-    public FPG generate(MembershipFunction lower, MembershipFunction upper, MembershipFunction reference) {
+    public FPG generate(MembershipFunction lower, MembershipFunction upper) {
         FPG fpg = new FPG();
         FPG l = (FPG) lower;
         FPG u = (FPG) upper;

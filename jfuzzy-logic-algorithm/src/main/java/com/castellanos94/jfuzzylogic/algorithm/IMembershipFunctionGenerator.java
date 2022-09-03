@@ -12,18 +12,18 @@ public interface IMembershipFunctionGenerator<T extends MembershipFunction> {
     /**
      * Generate boundaries
      * 
+     * @param function        In case of non-null parameters, reference function
      * @param referenceValues ref values {e.g. min, avg, max}
      * @return [lower, upper] boundaries function
      */
-    public T[] generateBoundaries(Double... referenceValues);
+    public T[] generateBoundaries(MembershipFunction function, Double... referenceValues);
 
     /**
      * Generates a new membership function using the reference boundaries
      * 
-     * @param lower     function
-     * @param upper     function
-     * @param reference if not null, using guide
+     * @param lower function
+     * @param upper function
      * @return new function
      */
-    public T generate(MembershipFunction lower, MembershipFunction upper, MembershipFunction reference);
+    public T generate(MembershipFunction lower, MembershipFunction upper);
 }
