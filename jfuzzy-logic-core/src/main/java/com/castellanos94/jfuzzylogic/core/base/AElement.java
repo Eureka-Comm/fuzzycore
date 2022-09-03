@@ -32,7 +32,7 @@ import lombok.ToString;
         @Type(value = Imp.class, names = { "imp", "IMP" }),
         @Type(value = Eqv.class, names = { "eqv", "EQV" }),
         @Type(value = Not.class, names = { "not", "NOT" }),
-        @Type(value = Generator.class, names = { "generator", "Generator","GENERATOR","*","comodin" })
+        @Type(value = Generator.class, names = { "generator", "Generator", "GENERATOR", "*", "comodin" })
 })
 @Getter
 @Setter
@@ -43,6 +43,10 @@ public abstract class AElement {
     protected String label;
     @EqualsAndHashCode.Include
     protected String description;
+
+    @EqualsAndHashCode.Include
+    protected String from;
+    @EqualsAndHashCode.Include
     protected boolean editable;
 
     @JsonIgnore

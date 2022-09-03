@@ -15,8 +15,11 @@ import org.apache.logging.log4j.Logger;
 
 import com.castellanos94.jfuzzylogic.algorithm.AMembershipFunctionOptimizer;
 import com.castellanos94.jfuzzylogic.algorithm.Algorithm;
+import com.castellanos94.jfuzzylogic.algorithm.JFuzzyLogicAlgorithmError;
 import com.castellanos94.jfuzzylogic.core.OperatorUtil;
+import com.castellanos94.jfuzzylogic.core.base.AElement;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
+import com.castellanos94.jfuzzylogic.core.base.OperatorType;
 import com.castellanos94.jfuzzylogic.core.base.impl.DiscoveryResult;
 import com.castellanos94.jfuzzylogic.core.base.impl.Generator;
 import com.castellanos94.jfuzzylogic.core.logic.Logic;
@@ -215,7 +218,7 @@ public class DiscoveryAlgorithm extends Algorithm {
                     a = population[aIndex];
                     b = population[bIndex];
                     c = crossover(a, b);
-                    c = mutation(c);
+                    c = mutation(c, generators);
                     offspring[i] = c;
                 }
                 // evaluate offspring
@@ -286,12 +289,32 @@ public class DiscoveryAlgorithm extends Algorithm {
         log.error("Discovery Results {}, elapsed time {} ms", this.discoveryPredicates.size(), this.getComputeTime());
     }
 
-    private Operator mutation(Operator c) {
-        return null;
+    private Operator mutation(Operator c, List<Generator> generators) {
+        if (random.nextDouble() <= mutationRate) {
+            return createRandomIndividual(generators, random.nextInt());
+        }
+        return c;
     }
 
     private Operator crossover(Operator a, Operator b) {
-        return null;
+        Operator c = a.copy();
+        List<AElement> aEdit = OperatorUtil.getEditableNode(a);
+        List<AElement> bEdit = OperatorUtil.getEditableNode(b);
+        if (aEdit.isEmpty() || bEdit.isEmpty()) {
+            log.error("A {} - {}", a, aEdit.size());
+            log.error("B {} - {}", b, bEdit.size());
+            throw new JFuzzyLogicAlgorithmError("Not editable nodes for crossover " + predicate);
+        }
+        AElement aCand = aEdit.get(random.nextInt(aEdit.size()));
+        int aNivel = OperatorUtil.dfs(a, aCand);
+        AElement bCand;
+        int bNivel;
+        do {
+            bCand = bEdit.get(random.nextInt(bEdit.size()));
+            bNivel = OperatorUtil.dfs(b, bCand);
+        } while (bNivel > aNivel);
+        OperatorUtil.replace(c, aCand, bCand);
+        return c;
     }
 
     protected void setRun(boolean flag) {
@@ -313,7 +336,35 @@ public class DiscoveryAlgorithm extends Algorithm {
     }
 
     private Operator createRandomIndividual(List<Generator> generators, int index) {
-        return null;
+        boolean flag = predicate instanceof Generator;
+        Iterator<Generator> iterator = generators.iterator();
+        List<Operator> offspring = new ArrayList<>();
+
+        while (iterator.hasNext()) {
+            Generator next = iterator.next();
+            Operator operator = PredicateGenerator.generate(random, next, index < populationSize / 2);
+            operator.setEditable(true);
+            operator.setFrom(next.getUuid());
+            if (flag) {
+                return operator;
+            } else {
+                offspring.add(operator);
+            }
+        }
+        Operator p = predicate.copy();
+        for (Operator operator : offspring) {
+            Generator g = generators.stream().filter(gs -> gs.getUuid().equals(operator.getFrom())).findAny().get();
+            Operator root = OperatorUtil.getRoot(p, operator);
+            if (root != null && root != p) {
+                p = OperatorUtil.replace(root, g, operator);
+            } else {
+                log.error("Predicate {}", p);
+                log.error("Child {} from {}", operator, g);
+                throw new JFuzzyLogicAlgorithmError(
+                        "Illegal assignment at createRandomIndividual with multiple generators");
+            }
+        }
+        return p;
     }
 
     @Override

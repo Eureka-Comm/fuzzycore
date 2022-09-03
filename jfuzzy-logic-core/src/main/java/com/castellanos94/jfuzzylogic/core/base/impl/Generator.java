@@ -1,8 +1,11 @@
 package com.castellanos94.jfuzzylogic.core.base.impl;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import com.castellanos94.jfuzzylogic.core.base.AElement;
 import com.castellanos94.jfuzzylogic.core.base.JFuzzyLogicError;
@@ -20,6 +23,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class Generator extends Operator {
+    protected String uuid;
     protected Integer depth;
     protected Integer maxChild;
     protected Set<OperatorType> operators;
@@ -27,11 +31,13 @@ public class Generator extends Operator {
     public Generator() {
         this.children = new LinkedHashSet<>();
         this.operators = new HashSet<>();
+        this.uuid = UUID.randomUUID().toString();
     }
 
     protected Generator(String label, String description, boolean editable, Integer depth, Integer maxChild,
-            Set<AElement> child, Set<OperatorType> operators) {
+            Set<AElement> child, Set<OperatorType> operators, String uuid) {
         this();
+        this.uuid = uuid;
         this.label = label;
         this.description = description;
         this.editable = editable;
@@ -48,6 +54,32 @@ public class Generator extends Operator {
     @JsonIgnore
     public Double getFitness() {
         return Double.NaN;
+    }
+
+    @JsonIgnore
+    public List<State> getStates() {
+        List<State> states = new ArrayList<>();
+        for (AElement c : children) {
+            if (c instanceof State) {
+                states.add((State) c);
+            } else if (c instanceof Generator) {
+                states.addAll(((Generator) c).getStates());
+            }
+        }
+        return states;
+    }
+
+    @JsonIgnore
+    public List<Generator> getGenerators() {
+        List<Generator> generators = new ArrayList<>();
+        for (AElement c : children) {
+            if (c instanceof Generator) {
+                generators.add((Generator) c);
+            } else if (c instanceof Generator) {
+                generators.addAll(((Generator) c).getGenerators());
+            }
+        }
+        return generators;
     }
 
     @Deprecated
@@ -74,7 +106,7 @@ public class Generator extends Operator {
 
     @Override
     public boolean add(AElement e) {
-        if( e instanceof Operator){
+        if (e instanceof Operator) {
             throw new JFuzzyLogicError("Operators cannot be added");
         }
         return _add(e);
@@ -95,7 +127,7 @@ public class Generator extends Operator {
     public Generator copy() {
         Set<AElement> cpy = new HashSet<>();
         children.forEach(c -> cpy.add(c.copy()));
-        return new Generator(label, description, editable, depth, maxChild, cpy, operators);
+        return new Generator(label, description, editable, depth, maxChild, cpy, operators, uuid);
     }
 
 }
