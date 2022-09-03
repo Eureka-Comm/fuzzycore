@@ -16,15 +16,45 @@ import com.castellanos94.jfuzzylogic.core.membershipfunction.MembershipFunction;
  * @version 0.1.0
  */
 public abstract class AMembershipFunctionOptimizer {
+    /**
+     * Start time in ms
+     */
     protected long startTime;
+    /**
+     * End time in ms
+     */
     protected long endTime;
+    /**
+     * PsuedoRandom generator
+     */
     protected Random random;
+    /**
+     * Map with membership function class for optimizer
+     */
     protected Map<String, Class<? extends MembershipFunction>> stateIdByClass;
+    /**
+     * Map with boundaris, expected [lower, upper] functions
+     */
     protected Map<String, MembershipFunction[]> boundaries;
+    /**
+     * Repair operators by class
+     */
     protected Map<Class<? extends MembershipFunction>, IMembershipFunctionRepair<? extends MembershipFunction>> repairOperators;
+    /**
+     * Generator operators by class
+     */
     protected Map<Class<? extends MembershipFunction>, IMembershipFunctionGenerator<? extends MembershipFunction>> generatorOperator;
+    /**
+     * Crossover operators by class
+     */
     protected Map<Class<? extends MembershipFunction>, IMembershipFunctionCrossover<? extends MembershipFunction>> crossoverOperator;
+    /**
+     * Mutation operators by class
+     */
     protected Map<Class<? extends MembershipFunction>, IMembershipFunctionMutation<? extends MembershipFunction>> mutationOperator;
+    /**
+     * Evaluator object for sequential process
+     */
     protected EvaluationAlgorithm evaluator;
 
     /**

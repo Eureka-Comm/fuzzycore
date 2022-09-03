@@ -28,20 +28,48 @@ import tech.tablesaw.api.Table;
  * Membership function optimizer
  * 
  * @version 0.5.0
- * @see FPGRepair FPG repair operator default
- * @see FPGGenerator FPG generator operator default
+ * @apiNote {@link FPGGenerator} default generator
+ * @apiNote {@link FPGCrossover} default crossover
+ * @apiNote {@link FPGRepair} default repair
  */
 public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
     @SuppressWarnings("unused")
     private static final Logger log = LogManager.getLogger(MembershipFunctionOptimizer.class);
+    /**
+     * Maximum process iterations
+     */
     protected Integer maxIterations;
+    /**
+     * Population size
+     */
     protected Integer populationSize;
+    /**
+     * Min truth value
+     */
     protected Double minTruthValue;
+    /**
+     * Crossover probability
+     */
     protected Double crossoverRate;
+    /**
+     * Mutation probability
+     */
     protected Double mutationRate;
+    /**
+     * Logic for evaluation
+     */
     protected Logic logic;
+    /**
+     * Data set
+     */
     protected Table table;
+    /**
+     * States to work
+     */
     protected final List<State> states;
+    /**
+     * Aux predicate
+     */
     protected Operator predicate;
 
     public MembershipFunctionOptimizer(Logic logic, Table table, Integer maxIterations,
