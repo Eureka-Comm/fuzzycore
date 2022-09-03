@@ -7,24 +7,23 @@ package com.castellanos94.jfuzzylogic.core.logic;
  */
 public enum ImplicationType {
     /**
-     * S-Implication x -> y = d(n(x),y)
+     * S-Implication {@code x -> y = d(n(x),y)}
      */
     Natural,
     /**
-     * QL-Implication x -> y = d(n(x),c(x,y))
+     * QL-Implication {@code x -> y = d(n(x),c(x,y))}
      */
     Zadeh,
     /**
-     * Reichenbach (S-implication) x -> y = 1 - x + x * y
+     * Reichenbach (S-implication) {@code x -> y = 1 - x + x * y}
      */
     Reichenbach,
     /**
-     * Klir-Yuan implication (a variation of Reichenbach without a classification) x
-     * -> y = 1 - x + x^2 * y
+     * Klir-Yuan implication (a variation of Reichenbach without a classification) {@code x -> y = 1 - x + x^2 * y}
      */
     KlirYuan,
     /**
-     * A-Implication x -> y = y^x
+     * A-Implication {@code x -> y = y^x}
      */
     Yager;
 
