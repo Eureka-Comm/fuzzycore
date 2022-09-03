@@ -13,9 +13,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.castellanos94.jfuzzylogic.algorithm.AMembershipFunctionOptimizer;
+import com.castellanos94.jfuzzylogic.algorithm.JFuzzyLogicAlgorithmError;
 import com.castellanos94.jfuzzylogic.algorithm.MembershipFunctionChromosome;
 import com.castellanos94.jfuzzylogic.core.OperatorUtil;
-import com.castellanos94.jfuzzylogic.core.base.JFuzzyLogicError;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
 import com.castellanos94.jfuzzylogic.core.base.impl.State;
 import com.castellanos94.jfuzzylogic.core.logic.Logic;
@@ -74,25 +74,7 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
                 .collect(Collectors.toList()));
         this.stateIdByClass = this.identifyClass(states, FPG.class);
         // Validate that repair operators exist for the functions to be optimized.
-        for (State state : states) {
-            MembershipFunction f = state.getMembershipFunction();
-            if (f != null && !(f instanceof FPG)) {
-                Class<?> clazz = f.getClass();
-                if (!this.generatorOperator.containsKey(clazz)) {
-                    throw new JFuzzyLogicError("No generator operator is registered for " + clazz);
-                }
-                if (!this.crossoverOperator.containsKey(clazz)) {
-                    throw new JFuzzyLogicError("No crossover operator is registered for " + clazz);
-                }
-                if (!this.repairOperators.containsKey(clazz)) {
-                    throw new JFuzzyLogicError("No repair operator is registered for " + clazz);
-                }
-                if (!mutationOperator.isEmpty() && !this.mutationOperator.containsKey(clazz)) {
-                    throw new JFuzzyLogicError("No mutation operator is registered for " + clazz);
-                }
-
-            }
-        }
+        validateOperators(states, FPG.class);
         // Generate boundaries
         generateBoundaries(states);
         // Generate random population

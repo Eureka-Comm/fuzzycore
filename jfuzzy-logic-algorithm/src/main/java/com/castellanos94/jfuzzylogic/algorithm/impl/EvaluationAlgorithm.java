@@ -10,9 +10,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.castellanos94.jfuzzylogic.algorithm.Algorithm;
+import com.castellanos94.jfuzzylogic.algorithm.JFuzzyLogicAlgorithmError;
 import com.castellanos94.jfuzzylogic.core.OperatorUtil;
 import com.castellanos94.jfuzzylogic.core.base.AElement;
-import com.castellanos94.jfuzzylogic.core.base.JFuzzyLogicError;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
 import com.castellanos94.jfuzzylogic.core.base.impl.And;
 import com.castellanos94.jfuzzylogic.core.base.impl.Eqv;
@@ -62,7 +62,7 @@ public class EvaluationAlgorithm extends Algorithm {
      * Performs the evaluation of the predicate, assigning the truth value given the
      * data set.
      * 
-     * @throws JFuzzyLogicError in case of: missing column, a null element in the
+     * @throws JFuzzyLogicAlgorithmError in case of: missing column, a null element in the
      *                          predicate (node or membership function) and the
      *                          evaluation of a non-compatible element.
      */
@@ -91,7 +91,7 @@ public class EvaluationAlgorithm extends Algorithm {
 
     private Double fitValue(AElement node, int index) {
         if (node == null) {
-            throw new JFuzzyLogicError(String.format("The element to be evaluated cannot be null, in the predicate %s",
+            throw new JFuzzyLogicAlgorithmError(String.format("The element to be evaluated cannot be null, in the predicate %s",
                     predicate));
         }
         List<Double> values = new ArrayList<>();
@@ -114,7 +114,7 @@ public class EvaluationAlgorithm extends Algorithm {
             return data.get(((State) node).getUuid()).get(index);
         } else {
             log.error("FitValue for {} at {}", node, predicate);
-            throw new JFuzzyLogicError(JFuzzyLogicError.UNSUPPORTED + " " + node + " from " + predicate
+            throw new JFuzzyLogicAlgorithmError(JFuzzyLogicAlgorithmError.UNSUPPORTED + " " + node + " from " + predicate
                     + " at evaluate:fitValue");
         }
     }
@@ -125,7 +125,7 @@ public class EvaluationAlgorithm extends Algorithm {
 
         for (State state : states) {
             if (!table.containsColumn(state.getColName())) {
-                throw new JFuzzyLogicError(String.format("Column %s does not exist for the state %s",
+                throw new JFuzzyLogicAlgorithmError(String.format("Column %s does not exist for the state %s",
                         state.getColName(), state.toString()));
             }
 

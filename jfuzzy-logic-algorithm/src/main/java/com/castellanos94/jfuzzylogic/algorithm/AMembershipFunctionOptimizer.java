@@ -63,6 +63,37 @@ public abstract class AMembershipFunctionOptimizer {
     }
 
     /**
+     * Validate that the necessary genetic operators exist to perform the
+     * optimization of membership functions.
+     * <p>
+     * If the membership function is null, the default value is set.
+     * </p>
+     * 
+     * @param states       to work
+     * @param defaultClass in null case, set this value
+     * @throws JFuzzyLogicAlgorithmError when the operator does not exist for
+     *                                   current class
+     */
+    protected void validateOperators(List<State> states, Class<? extends MembershipFunction> defaultClass) {
+        for (State state : states) {
+            MembershipFunction f = state.getMembershipFunction();
+            Class<?> clazz = f == null ? defaultClass : f.getClass();
+            if (!this.generatorOperator.containsKey(clazz)) {
+                throw new JFuzzyLogicAlgorithmError("No generator operator is registered for " + clazz);
+            }
+            if (!this.crossoverOperator.containsKey(clazz)) {
+                throw new JFuzzyLogicAlgorithmError("No crossover operator is registered for " + clazz);
+            }
+            if (!this.repairOperators.containsKey(clazz)) {
+                throw new JFuzzyLogicAlgorithmError("No repair operator is registered for " + clazz);
+            }
+            if (!mutationOperator.isEmpty() && !this.mutationOperator.containsKey(clazz)) {
+                throw new JFuzzyLogicAlgorithmError("No mutation operator is registered for " + clazz);
+            }
+        }
+    }
+
+    /**
      * Creates a new individual using a uniform cross given two parents. This method
      * invoke crossoverOperator by class
      * 
@@ -105,7 +136,8 @@ public abstract class AMembershipFunctionOptimizer {
      * If the membership function is null, the default value is set.
      * </p>
      * 
-     * @param states to work
+     * @param states       to work
+     * @param defaultClass in null case, set this value
      * @return Map {@code key:state.uuid, value : class}
      */
     protected Map<String, Class<? extends MembershipFunction>> identifyClass(List<State> states,
