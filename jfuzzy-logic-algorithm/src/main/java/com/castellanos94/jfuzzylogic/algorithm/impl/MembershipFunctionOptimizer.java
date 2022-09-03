@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -38,31 +39,31 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
     /**
      * Maximum process iterations
      */
-    protected Integer maxIterations;
+    protected final Integer maxIterations;
     /**
      * Population size
      */
-    protected Integer populationSize;
+    protected final Integer populationSize;
     /**
      * Min truth value
      */
-    protected Double minTruthValue;
+    protected final Double minTruthValue;
     /**
      * Crossover probability
      */
-    protected Double crossoverRate;
+    protected final Double crossoverRate;
     /**
      * Mutation probability
      */
-    protected Double mutationRate;
+    protected final Double mutationRate;
     /**
      * Logic for evaluation
      */
-    protected Logic logic;
+    protected final Logic logic;
     /**
      * Data set
      */
-    protected Table table;
+    protected final Table table;
     /**
      * States to work
      */
@@ -103,7 +104,7 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
         // Validate that repair operators exist for the functions to be optimized.
         validateOperators(states, FPG.class);
         // Generate boundaries
-        generateBoundaries(states);
+        this.boundaries = generateBoundaries(states);
         // Generate random population
         List<MembershipFunctionChromosome> population = new ArrayList<>(populationSize);
         for (int i = 0; i < populationSize; i++) {
@@ -204,15 +205,16 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
     }
 
     @Override
-    protected void generateBoundaries(List<State> states) {
-        this.boundaries = new HashMap<>();
+    protected Map<String, MembershipFunction[]> generateBoundaries(List<State> states) {
+        Map<String, MembershipFunction[]> boundaries = new HashMap<>();
         for (State state : states) {
             Class<?> clazz = this.stateIdByClass.get(state.getUuid());
             NumericColumn<?> column = table.numberColumn(state.getColName());
-            this.boundaries.put(state.getUuid(),
+            boundaries.put(state.getUuid(),
                     this.generatorOperator.get(clazz).generateBoundaries(state.getMembershipFunction(), column.min(),
                             column.mean(), column.max()));
         }
+        return boundaries;
     }
 
     @Override
@@ -226,6 +228,14 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
             chromosome.setId(i, states.get(i).getUuid());
         }
         return chromosome;
+    }
+
+    @Override
+    public MembershipFunctionOptimizer copy() {
+        MembershipFunctionOptimizer cpy = new MembershipFunctionOptimizer(logic, table, maxIterations, populationSize,
+                minTruthValue, crossoverRate, mutationRate);
+
+        return cpy;
     }
 
 }

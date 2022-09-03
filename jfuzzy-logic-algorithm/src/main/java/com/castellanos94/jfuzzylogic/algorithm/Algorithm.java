@@ -25,4 +25,14 @@ public abstract class Algorithm {
     public void setEndTime(long endTime) {
         this.endTime = endTime;
     }
+
+    /**
+     * Get computation time
+     * 
+     * @return time ms
+     */
+    public long getComputeTime() {
+        return this.endTime - this.startTime;
+    }
+
 }

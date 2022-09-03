@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import com.castellanos94.jfuzzylogic.core.base.AElement;
 import com.castellanos94.jfuzzylogic.core.base.JFuzzyLogicError;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
+import com.castellanos94.jfuzzylogic.core.base.impl.Generator;
 
 /**
  * Class for Operator utilities
@@ -84,11 +85,17 @@ public class OperatorUtil {
     }
 
     private static <T> void _getNodesByClass(Operator tree, ArrayList<T> nodes, Class<T> clazz) {
+        boolean isOperator = clazz == Operator.class;
         for (AElement element : tree) {
             if (clazz.isInstance(element)) {
-                nodes.add(clazz.cast(element));
+                if (isOperator && !(element instanceof Generator)) {
+                    nodes.add(clazz.cast(element));
+                } else if (!isOperator) {
+                    nodes.add(clazz.cast(element));
+                }
+
             }
-            if (element instanceof Operator) {
+            if (element instanceof Operator && !(element instanceof Generator)) {
                 _getNodesByClass((Operator) element, nodes, clazz);
             }
         }

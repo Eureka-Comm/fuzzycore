@@ -196,7 +196,7 @@ public abstract class AMembershipFunctionOptimizer {
      * @param states to work
      * @see IMembershipFunctionGenerator#generateBoundaries(Double...)
      */
-    protected abstract void generateBoundaries(List<State> states);
+    protected abstract Map<String, MembershipFunction[]>  generateBoundaries(List<State> states);
 
     /**
      * Generate a new solution: this method delegates the creation of alleles to the
@@ -283,4 +283,11 @@ public abstract class AMembershipFunctionOptimizer {
     public long getStartTime() {
         return startTime;
     }
+
+    /**
+     * Create a copy of this object
+     * 
+     * @return copy
+     */
+    public abstract AMembershipFunctionOptimizer copy();
 }
