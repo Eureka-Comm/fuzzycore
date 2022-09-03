@@ -114,7 +114,9 @@ public class MembershipFunctionOptimizer extends Algorithm {
             offspringSize++;
         }
         while (currentIteration < maxIterations && population.get(maxValueIndex).getFitness() < minTruthValue) {
-            log.error("Iteration {} : {}", currentIteration, population.get(maxValueIndex));
+            if (Utils.equals(population.get(maxValueIndex).getFitness(), minTruthValue)) {
+                break;
+            }
             List<MembershipFunctionChromosome> offspring = new ArrayList<>(offspringSize);
             // Crossover
             for (int i = 0; i < offspringSize; i++) {
@@ -157,7 +159,6 @@ public class MembershipFunctionOptimizer extends Algorithm {
         this.result.setStartTime(startTime);
         this.result.setEndTime(endTime);
         this.result.setPredicate(operator);
-        log.error("Best fitness {} for predicate {}", operator.getFitness(), predicate.toString());
     }
 
     /**

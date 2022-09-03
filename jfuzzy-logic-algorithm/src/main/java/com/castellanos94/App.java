@@ -9,6 +9,7 @@ import com.castellanos94.jfuzzylogic.algorithm.impl.EvaluationAlgorithm;
 import com.castellanos94.jfuzzylogic.algorithm.impl.MembershipFunctionOptimizer;
 import com.castellanos94.jfuzzylogic.core.OperatorUtil;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
+import com.castellanos94.jfuzzylogic.core.base.impl.And;
 import com.castellanos94.jfuzzylogic.core.base.impl.EvaluationResult;
 import com.castellanos94.jfuzzylogic.core.base.impl.Imp;
 import com.castellanos94.jfuzzylogic.core.base.impl.Not;
@@ -32,9 +33,12 @@ public class App {
         ClassLoader classLoader = App.class.getClassLoader();
         File file = new File(classLoader.getResource("datasets/tinto.csv").getFile());
         Table table = Table.read().csv(file);
-        Operator predicate = new Imp(new State("alcohol"), new State("high quality", "quality", new Sigmoid(5.5, 4.)));
+        Operator predicate = new Imp(
+                new And(new State("alcohol"), new State("citric_acid"), new State("pH"), new State("volatile_acidity"),
+                        new State("free_sulfur_dioxide"), new State("sulphates"), new State("residual_sugar")),
+                new State("high quality", "quality", new Sigmoid(5.5, 4.)));
         Logic logic = LogicBuilder.newBuilder(LogicType.GMBC).create();
-        MembershipFunctionOptimizer optimizer = new MembershipFunctionOptimizer(predicate, logic, table, 100, 20, 0.95,
+        MembershipFunctionOptimizer optimizer = new MembershipFunctionOptimizer(predicate, logic, table, 100, 20, 0.98,
                 0.9, 0.1);
         optimizer.execute();
         EvaluationResult evaluationResult = optimizer.getResult();
