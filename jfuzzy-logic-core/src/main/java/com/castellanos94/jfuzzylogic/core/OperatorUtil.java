@@ -2,9 +2,11 @@ package com.castellanos94.jfuzzylogic.core;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.castellanos94.jfuzzylogic.core.base.AElement;
@@ -34,10 +36,10 @@ public class OperatorUtil {
             return pos;
         }
         for (AElement n : root) {
-            if (node.equals(root)) {
-                return pos + 1;
+            if (node.equals(n)) {
+                return pos;
             } else if (n instanceof Operator && !(n instanceof Generator)) {
-                int position = dfs((Operator) n, node, pos);
+                int position = dfs((Operator) n, node, pos + 1);
                 if (position != -1) {
                     return position;
                 }
@@ -66,14 +68,14 @@ public class OperatorUtil {
      * @return nodes of class from root
      */
     public static <T> ArrayList<T> getNodesByClass(Operator tree, Class<T> clazz) {
-        ArrayList<T> nodes = new ArrayList<>();
+        Set<T> nodes = new HashSet<>();
         if (clazz == Generator.class) {
             if (clazz.isInstance(tree)) {
                 nodes.add(clazz.cast(tree));
             }
         }
         _getNodesByClass(tree, nodes, clazz);
-        return nodes;
+        return new ArrayList<>(nodes);
     }
 
     /**
@@ -117,7 +119,7 @@ public class OperatorUtil {
         return nr;
     }
 
-    private static <T> void _getNodesByClass(Operator tree, ArrayList<T> nodes, Class<T> clazz) {
+    private static <T> void _getNodesByClass(Operator tree, Set<T> nodes, Class<T> clazz) {
         boolean isOperator = clazz == Operator.class;
         for (AElement element : tree) {
             if (clazz.isInstance(element)) {

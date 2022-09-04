@@ -13,7 +13,7 @@ public class PredicateGenerator {
             generator.setMaxChild(generator.getOperators().size() + 2);
         }
         List<State> states = generator.getStates();
-        List<Ge
+        //List<Ge
         return null;
     }
 }
