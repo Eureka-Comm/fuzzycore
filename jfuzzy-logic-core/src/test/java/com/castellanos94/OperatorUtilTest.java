@@ -98,8 +98,7 @@ public class OperatorUtilTest {
 
     @Test
     public void getParent() {
-        State a = new State("a");
-        State b = new State("b");
+        State a = new State("a");        
         State c = new State("c");
         State d = new State("d");
         Not nc = new Not(c);

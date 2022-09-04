@@ -19,7 +19,6 @@ import com.castellanos94.jfuzzylogic.algorithm.JFuzzyLogicAlgorithmError;
 import com.castellanos94.jfuzzylogic.core.OperatorUtil;
 import com.castellanos94.jfuzzylogic.core.base.AElement;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
-import com.castellanos94.jfuzzylogic.core.base.OperatorType;
 import com.castellanos94.jfuzzylogic.core.base.impl.DiscoveryResult;
 import com.castellanos94.jfuzzylogic.core.base.impl.Generator;
 import com.castellanos94.jfuzzylogic.core.logic.Logic;
@@ -146,6 +145,7 @@ public class DiscoveryAlgorithm extends Algorithm {
         this.run = true;
         this.optimizer = new MembershipFunctionOptimizer(logic, table, adjMaxIteration, adjPopulationSize,
                 adjMinTruthValue, adjCrossoverRate, adjMutationRate);
+        this.random = new Random();
     }
 
     @Override
@@ -342,7 +342,7 @@ public class DiscoveryAlgorithm extends Algorithm {
 
         while (iterator.hasNext()) {
             Generator next = iterator.next();
-            Operator operator = PredicateGenerator.generate(random, next, index < populationSize / 2);            
+            Operator operator = PredicateGenerator.generate(random, next, index < populationSize / 2);
             if (flag) {
                 return operator;
             } else {

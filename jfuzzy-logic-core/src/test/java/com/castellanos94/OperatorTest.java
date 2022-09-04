@@ -77,8 +77,6 @@ public class OperatorTest {
     @Test(expected = NullPointerException.class)
     public void notNullCondition() {
         State alcohol = new State("alcohol", "acohol");
-        State q = new State("quality", "quality");
-        State a = new State("acidity", "acidity");
         Eqv eqv = new Eqv();
         eqv.add(alcohol);
         eqv.add(null);
@@ -88,7 +86,6 @@ public class OperatorTest {
     public void operatorEquals() {
         State alcohol = new State("alcohol", "acohol");
         State q = new State("quality", "quality");
-        State a = new State("acidity", "acidity");
         Eqv eqv = new Eqv();
         eqv.add(alcohol);
         eqv.add(q);

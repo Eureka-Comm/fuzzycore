@@ -1,8 +1,6 @@
 package com.castellanos94.jfuzzylogic.core.base.impl;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 import com.castellanos94.jfuzzylogic.core.base.Operator;
 import com.castellanos94.jfuzzylogic.core.base.Result;

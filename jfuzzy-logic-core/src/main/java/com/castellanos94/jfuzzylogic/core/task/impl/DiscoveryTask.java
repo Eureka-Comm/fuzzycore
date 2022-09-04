@@ -1,8 +1,5 @@
 package com.castellanos94.jfuzzylogic.core.task.impl;
 
-import java.util.HashSet;
-
-import com.castellanos94.jfuzzylogic.core.base.impl.Generator;
 import com.castellanos94.jfuzzylogic.core.task.Task;
 
 import lombok.EqualsAndHashCode;

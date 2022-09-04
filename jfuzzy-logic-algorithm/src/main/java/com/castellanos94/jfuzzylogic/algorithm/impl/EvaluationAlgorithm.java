@@ -62,9 +62,11 @@ public class EvaluationAlgorithm extends Algorithm {
      * Performs the evaluation of the predicate, assigning the truth value given the
      * data set.
      * 
-     * @throws JFuzzyLogicAlgorithmError in case of: missing column, a null element in the
-     *                          predicate (node or membership function) and the
-     *                          evaluation of a non-compatible element.
+     * @throws JFuzzyLogicAlgorithmError in case of: missing column, a null element
+     *                                   in the
+     *                                   predicate (node or membership function) and
+     *                                   the
+     *                                   evaluation of a non-compatible element.
      */
     @Override
     public void execute() {
@@ -91,8 +93,9 @@ public class EvaluationAlgorithm extends Algorithm {
 
     private Double fitValue(AElement node, int index) {
         if (node == null) {
-            throw new JFuzzyLogicAlgorithmError(String.format("The element to be evaluated cannot be null, in the predicate %s",
-                    predicate));
+            throw new JFuzzyLogicAlgorithmError(
+                    String.format("The element to be evaluated cannot be null, in the predicate %s",
+                            predicate));
         }
         List<Double> values = new ArrayList<>();
         if (node instanceof And) {
@@ -114,8 +117,9 @@ public class EvaluationAlgorithm extends Algorithm {
             return data.get(((State) node).getUuid()).get(index);
         } else {
             log.error("FitValue for {} at {}", node, predicate);
-            throw new JFuzzyLogicAlgorithmError(JFuzzyLogicAlgorithmError.UNSUPPORTED + " " + node + " from " + predicate
-                    + " at evaluate:fitValue");
+            throw new JFuzzyLogicAlgorithmError(
+                    JFuzzyLogicAlgorithmError.UNSUPPORTED + " " + node + " from " + predicate
+                            + " at evaluate:fitValue");
         }
     }
 
@@ -135,7 +139,15 @@ public class EvaluationAlgorithm extends Algorithm {
                 @SuppressWarnings("rawtypes")
                 NumericColumn column = table.numberColumn(state.getColName());
                 for (int i = 0; i < column.size(); i++) {
-                    fuzzy.add(state.getMembershipFunction().eval(column.getDouble(i)));
+                    try {
+                        fuzzy.add(state.getMembershipFunction().eval(column.getDouble(i)));
+                    } catch (NullPointerException e) {
+                        log.error(
+                                "Null pointer state: label = {}, colname = {}, editable = {}, from = {}, membership function = {}",
+                                state.getLabel(), state.getColName(), state.isEditable(), state.getFrom(),
+                                state.getMembershipFunction());
+                        throw e;
+                    }
                 }
             } else {
                 Column<?> column = table.column(state.getColName());

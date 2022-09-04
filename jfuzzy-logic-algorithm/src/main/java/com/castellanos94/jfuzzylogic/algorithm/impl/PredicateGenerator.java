@@ -56,7 +56,6 @@ public class PredicateGenerator {
             System.out.println("Max child: " + generator.getMaxChild());
         }
         List<State> states = generator.getStates();
-        System.out.println(generator.getLabel() + " " + states);
         if (states.size() < 2) {
             throw new JFuzzyLogicError("At least 2 variables are required to generate");
         }
