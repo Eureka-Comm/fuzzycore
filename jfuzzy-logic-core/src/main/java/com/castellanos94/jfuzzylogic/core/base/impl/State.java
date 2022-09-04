@@ -21,22 +21,24 @@ public class State extends AElement {
     protected MembershipFunction membershipFunction;
 
     public State(String colName) {
-        this(colName, colName, null, false, null);
+        this(colName, colName, null, false, null, null);
     }
 
     public State(String label, String colName) {
-        this(label, colName, null, false, null);
+        this(label, colName, null, false, null, null);
     }
 
     public State(String label, String colName, MembershipFunction function) {
-        this(label, colName, function, false, null);
+        this(label, colName, function, false, null, null);
     }
 
-    protected State(String label, String colName, MembershipFunction function, boolean editable, String uuid) {
+    protected State(String label, String colName, MembershipFunction function, boolean editable, String uuid,
+            String from) {
         this.label = label;
         this.colName = colName;
         this.membershipFunction = function == null ? null : function.copy();
         this.editable = editable;
+        this.from = from;
         if (uuid == null)
             this.uuid = UUID.randomUUID().toString();
         else
@@ -45,12 +47,12 @@ public class State extends AElement {
 
     @Override
     public State copy() {
-        return new State(label, colName, membershipFunction, editable, uuid);
+        return new State(label, colName, membershipFunction, editable, uuid, from);
     }
 
     @Override
     public String toString() {
-        return String.format("%s - %s %s", label, colName, membershipFunction);
+        return String.format("%s - %s %s", label, colName, membershipFunction == null ? "" : membershipFunction);
     }
 
 }

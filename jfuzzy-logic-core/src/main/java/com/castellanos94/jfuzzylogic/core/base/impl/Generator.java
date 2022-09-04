@@ -109,6 +109,8 @@ public class Generator extends Operator {
         if (e instanceof Operator) {
             throw new JFuzzyLogicError("Operators cannot be added");
         }
+        e.setEditable(true);
+        e.setFrom(this.uuid);
         return _add(e);
     }
 
