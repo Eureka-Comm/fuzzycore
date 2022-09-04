@@ -66,7 +66,7 @@ public class State extends AElement {
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
-            return true;        
+            return true;
         if (getClass() != obj.getClass())
             return false;
         State other = (State) obj;

@@ -17,6 +17,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class OperatorTest {
+   
+
     @Test
     public void toStringOperator() {
         State alcohol = new State("alcohol", "acohol");

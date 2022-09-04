@@ -12,7 +12,14 @@ import java.util.stream.Collectors;
 import com.castellanos94.jfuzzylogic.core.base.AElement;
 import com.castellanos94.jfuzzylogic.core.base.JFuzzyLogicError;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
+import com.castellanos94.jfuzzylogic.core.base.OperatorType;
+import com.castellanos94.jfuzzylogic.core.base.impl.And;
+import com.castellanos94.jfuzzylogic.core.base.impl.Eqv;
 import com.castellanos94.jfuzzylogic.core.base.impl.Generator;
+import com.castellanos94.jfuzzylogic.core.base.impl.Imp;
+import com.castellanos94.jfuzzylogic.core.base.impl.Not;
+import com.castellanos94.jfuzzylogic.core.base.impl.Or;
+import com.castellanos94.jfuzzylogic.core.base.impl.State;
 
 /**
  * Class for Operator utilities
@@ -20,8 +27,116 @@ import com.castellanos94.jfuzzylogic.core.base.impl.Generator;
  * @see Operator
  */
 public class OperatorUtil {
+    public static boolean isValid(AElement element, boolean... includeMembership) {
+        if (element == null) {
+            return false;
+        }
+        boolean flag = false;
+        OperatorType type = null;
+        if (element instanceof State) {
+            State state = (State) element;
+            flag = state.getColName() != null && state.getLabel() != null;
+            if (includeMembership.length > 0 && includeMembership[0]) {
+                flag = flag && state.getMembershipFunction() != null
+                        && state.getMembershipFunction().isValid();
+            }
+        } else if (element instanceof Generator) {
+            Generator generator = (Generator) element;
+            flag = generator.getLabel() != null && generator.getDepth() != null && generator.getStates().size() > 1;
+            List<Generator> generators = generator.getGenerators();
+            if (!generators.isEmpty()) {
+                for (int i = 0; i < generators.size() && flag; i++) {
+                    flag = flag
+                            && isValid(generators.get(i), includeMembership.length > 0 ? includeMembership[0] : false);
+                }
+            }
+        } else {
+            type = getType((Operator) element);
+        }
+
+        if (type != null) {
+            Operator operator = (Operator) element;
+            int count = 0;
+            for (AElement ae : operator) {
+                boolean av = isValid(ae, includeMembership.length > 0 ? includeMembership[0] : false);
+                if (!av) {
+                    return false;
+                }
+                count++;
+            }
+            switch (type) {
+                case AND:
+                case OR:
+                    flag = count >= 2;
+                    break;
+                case IMP:
+                case EQV:
+                    flag = count == 2;
+                    break;
+                case NOT:
+                    flag = count == 1;
+                    break;
+            }
+        }
+        return flag;
+    }
+
     /**
-     * Get nivel in the tree
+     * gets instance based on type
+     * 
+     * @param type operator
+     * @return new instance
+     * @throws JFuzzyLogicError if the type is unknown
+     */
+    public static Operator getInstance(OperatorType type) {
+        switch (type) {
+            case AND:
+                return new And();
+            case OR:
+                return new Or();
+            case IMP:
+                return new Imp();
+            case EQV:
+                return new Eqv();
+            case NOT:
+                return new Not();
+            default:
+                throw new JFuzzyLogicError("No class registered for " + type);
+        }
+    }
+
+    /**
+     * Gets the type based on the instance.
+     * 
+     * @param operator to get type
+     * @return If the instance is of type generator it returns null
+     * @throws JFuzzyLogicError if the instance is unknown it throws
+     *                          exception.
+     */
+    public static OperatorType getType(Operator operator) {
+        if (operator instanceof Generator) {
+            return null;
+        }
+        if (operator instanceof And) {
+            return OperatorType.AND;
+        }
+        if (operator instanceof Or) {
+            return OperatorType.OR;
+        }
+        if (operator instanceof Not) {
+            return OperatorType.NOT;
+        }
+        if (operator instanceof Imp) {
+            return OperatorType.IMP;
+        }
+        if (operator instanceof Eqv) {
+            return OperatorType.EQV;
+        }
+        throw new JFuzzyLogicError("Unkown type for " + operator.getClass().getSimpleName());
+    }
+
+    /**
+     * Get nivel in the tree by Depth-first search
      * 
      * @param root
      * @param node
@@ -31,6 +146,14 @@ public class OperatorUtil {
         return dfs(root, node, 1);
     }
 
+    /**
+     * Aux function for DFS
+     * 
+     * @param root
+     * @param node
+     * @param pos
+     * @return
+     */
     private static int dfs(Operator root, AElement node, int pos) {
         if (node.equals(root)) {
             return pos;
@@ -87,8 +210,8 @@ public class OperatorUtil {
      * @param oldValue to replace
      * @param newValue to set
      * @return silly copy
-     * @exception JFuzzyLogicError anything related to
-     *                             {@code root.getClass().getDeclaredConstructor().newInstance() }
+     * @throws JFuzzyLogicError anything related to
+     *                          {@code root.getClass().getDeclaredConstructor().newInstance() }
      */
     public static Operator replace(final Operator root, final AElement oldValue, final AElement newValue) {
         Objects.requireNonNull(root);
@@ -136,6 +259,13 @@ public class OperatorUtil {
         }
     }
 
+    /**
+     * Gets the parent node, if it exists in the operator.
+     * 
+     * @param root operator to be searched
+     * @param node child node
+     * @return If the father exists, otherwise null
+     */
     public static Operator getRoot(Operator root, AElement node) {
         Objects.requireNonNull(root);
         Objects.requireNonNull(node);

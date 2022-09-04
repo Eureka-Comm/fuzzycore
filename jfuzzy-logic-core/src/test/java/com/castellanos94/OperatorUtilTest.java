@@ -17,9 +17,52 @@ import com.castellanos94.jfuzzylogic.core.base.impl.Imp;
 import com.castellanos94.jfuzzylogic.core.base.impl.Not;
 import com.castellanos94.jfuzzylogic.core.base.impl.Or;
 import com.castellanos94.jfuzzylogic.core.base.impl.State;
+import com.castellanos94.jfuzzylogic.core.membershipfunction.impl.FPG;
 
 public class OperatorUtilTest {
 
+    @Test
+    public void checkValidOperators() {
+        And and = new And();
+        assertEquals(false, OperatorUtil.isValid(and));
+        State alcohol = new State("alcohol", "acohol");
+        and.add(alcohol);
+        assertEquals(false, OperatorUtil.isValid(and));
+        State q = new State("quality", "quality", new FPG());
+        and.add(q);
+        System.out.println(and);
+        assertEquals(true, OperatorUtil.isValid(and));
+        assertEquals(false, OperatorUtil.isValid(and,true));
+        assertEquals(true, OperatorUtil.isValid(and,false));
+        State d = new State("d", "d", new FPG(0.5,0.5,0.5));
+        and.add(d);
+        System.out.println(and);
+        assertEquals(false, OperatorUtil.isValid(and,true));
+        d = new State("d", "d", new FPG(0.5,0.7,0.5));
+        and.add(d);
+        System.out.println(and);
+        assertEquals(false, OperatorUtil.isValid(and,true));
+        Not not = new Not(d);
+        assertEquals(true, OperatorUtil.isValid(not));
+        assertEquals(true, OperatorUtil.isValid(not,true));
+        Imp imp = new Imp(d, not);
+        assertEquals(true, OperatorUtil.isValid(imp, true));
+        Eqv eqv = new Eqv(alcohol, imp);
+        assertEquals(false, OperatorUtil.isValid(eqv, true));
+        assertEquals(true, OperatorUtil.isValid(eqv));
+    }
+
+    @Test
+    public void checkValidStates() {
+        State alcohol = new State("alcohol", "acohol");
+        State q = new State("quality", "quality", new FPG());
+        State d = new State("d", "d", new FPG(0.5,0.5,0.5));
+        assertEquals(false, OperatorUtil.isValid(null));
+        assertEquals(true, OperatorUtil.isValid(alcohol));
+        assertEquals(false, OperatorUtil.isValid(q, true));
+        assertEquals(true, OperatorUtil.isValid(d));
+        assertEquals(false, OperatorUtil.isValid(d, true));
+    }
     @Test
     public void dfs() {
         State a = new State("a");

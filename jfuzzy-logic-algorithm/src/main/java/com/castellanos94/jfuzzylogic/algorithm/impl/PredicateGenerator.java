@@ -69,7 +69,7 @@ public class PredicateGenerator {
     private static Operator generateChild(Random random, Generator generator, List<State> states,
             List<Generator> generators,
             OperatorType[] operatorTypes, boolean balanced) {
-        Operator root = getInstance(random, operatorTypes[random.nextInt(operatorTypes.length)]);
+        Operator root = OperatorUtil.getInstance(operatorTypes[random.nextInt(operatorTypes.length)]);
         root.setEditable(true);
         root.setFrom(generator.getUuid());
 
@@ -128,7 +128,7 @@ public class PredicateGenerator {
                 } else {
                     Operator tmp;
                     if (generators.isEmpty() || random.nextDouble() > 0.45) {
-                        tmp = getInstance(random, operatorTypes[random.nextInt(operatorTypes.length)]);
+                        tmp = OperatorUtil.getInstance(operatorTypes[random.nextInt(operatorTypes.length)]);
                         tmp.setEditable(true);
                         tmp.setFrom(generator.getUuid());
                         current.add(tmp);
@@ -148,20 +148,4 @@ public class PredicateGenerator {
         return root;
     }
 
-    private static Operator getInstance(Random random, OperatorType type) {
-        switch (type) {
-            case AND:
-                return new And();
-            case OR:
-                return new Or();
-            case IMP:
-                return new Imp();
-            case EQV:
-                return new Eqv();
-            case NOT:
-                return new Not();
-            default:
-                throw new JFuzzyLogicAlgorithmError("No class registered for " + type);
-        }
-    }
 }

@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import com.castellanos94.jfuzzylogic.core.base.AElement;
 import com.castellanos94.jfuzzylogic.core.base.JFuzzyLogicError;
@@ -60,7 +59,7 @@ public class Generator extends Operator {
         for (AElement c : children) {
             if (c instanceof State) {
                 states.add((State) c);
-            } 
+            }
         }
         return new ArrayList<>(states);
     }
@@ -71,7 +70,7 @@ public class Generator extends Operator {
         for (AElement c : children) {
             if (c instanceof Generator) {
                 generators.add((Generator) c);
-            } 
+            }
         }
         return generators;
     }
