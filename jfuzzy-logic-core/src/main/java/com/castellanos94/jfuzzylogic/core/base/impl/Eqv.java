@@ -30,6 +30,7 @@ public class Eqv extends Operator {
         cpy.setFitness(fitness);
         cpy.setLabel(label);
         cpy.setDescription(description);
+        cpy.setUuid(uuid);
         return cpy;
     }
 

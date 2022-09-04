@@ -66,12 +66,8 @@ public class Imp extends Operator {
 
     @Override
     public boolean add(AElement e) {
-        if (this.children.isEmpty()) {
-            setAntecedent(e);
-            return true;
-        } else if (this.children.size() == 1) {
-            setConsequent(e);
-            return true;
+        if (this.children.size() < 2) {
+            return this.children.add(e);
         } else {
             throw new JFuzzyLogicError(JFuzzyLogicError.UNSUPPORTED + getClass().getSimpleName());
         }
@@ -85,6 +81,7 @@ public class Imp extends Operator {
         cpy.setFitness(fitness);
         cpy.setLabel(label);
         cpy.setDescription(description);
+        cpy.setUuid(uuid);
         return cpy;
     }
 

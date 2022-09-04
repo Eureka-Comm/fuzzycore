@@ -1,5 +1,7 @@
 package com.castellanos94.jfuzzylogic.core.base;
 
+import java.util.UUID;
+
 import com.castellanos94.jfuzzylogic.core.base.impl.And;
 import com.castellanos94.jfuzzylogic.core.base.impl.Eqv;
 import com.castellanos94.jfuzzylogic.core.base.impl.Generator;
@@ -48,6 +50,12 @@ public abstract class AElement {
     protected String from;
     @EqualsAndHashCode.Include
     protected boolean editable;
+    @EqualsAndHashCode.Include
+    protected String uuid;
+
+    public AElement() {
+        this.uuid = UUID.randomUUID().toString();
+    }
 
     @JsonIgnore
     public abstract AElement copy();

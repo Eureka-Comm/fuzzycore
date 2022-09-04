@@ -15,6 +15,7 @@ public abstract class Operator extends AElement implements Comparable<Operator>,
     protected Double fitness;
 
     protected Operator() {
+        super();
         this.children = new LinkedHashSet<>();
     }
 

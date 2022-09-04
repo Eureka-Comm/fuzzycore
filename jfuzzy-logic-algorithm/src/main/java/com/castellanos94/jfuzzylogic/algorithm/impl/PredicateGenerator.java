@@ -25,9 +25,9 @@ public class PredicateGenerator {
         Generator generator = new Generator();
         generator.setLabel("mi generador");
         generator.setDepth(3);
-        generator.add(new State("a"), new State("b"));
-        // generator.add( new State("c"), new State("d"));
-        generator.add(OperatorType.AND, OperatorType.OR, OperatorType.EQV, OperatorType.IMP, OperatorType.NOT);
+        generator.add(new State("a"), new State("b"), new State("c"));
+        generator.add( new State("d"), new State("d"));
+        generator.add(OperatorType.IMP, OperatorType.EQV);
         Random random = new Random(1l);
         random.setSeed(1l);
 
@@ -112,11 +112,11 @@ public class PredicateGenerator {
                     Operator tmp = getInstance(random, operatorTypes[random.nextInt(operatorTypes.length)]);
                     tmp.setEditable(true);
                     tmp.setFrom(generator.getUuid());
+                    //System.out.println(String.format("\t\t\tTo add %s", tmp));
                     current.add(tmp);
                     pending.add(tmp);
                 }
                 //System.out.println(String.format("\t%3d - Current %s", i, current));
-
             }
         }
 

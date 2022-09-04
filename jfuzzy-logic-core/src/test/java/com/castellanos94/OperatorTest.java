@@ -1,6 +1,7 @@
 package com.castellanos94;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 
@@ -90,7 +91,7 @@ public class OperatorTest {
         eqv.add(alcohol);
         eqv.add(q);
         Eqv eqv2 = new Eqv(alcohol, q);
-        assertEquals(eqv, eqv2);
+        assertNotEquals(eqv, eqv2);
 
         assertEquals(eqv, eqv.copy());
     }
@@ -102,8 +103,9 @@ public class OperatorTest {
         And and = new And(alcohol, q);
 
         ObjectMapper mapper = new ObjectMapper();
+        String str = mapper.writeValueAsString(and);
         Operator operator = mapper.readValue(
-                "{\"@type\":\"and\",\"label\":null,\"description\":null,\"editable\":false,\"children\":[{\"@type\":\"state\",\"label\":\"alcohol\",\"description\":null,\"editable\":false,\"colName\":\"acohol\",\"membershipFunction\":null},{\"@type\":\"state\",\"label\":\"quality\",\"description\":null,\"editable\":false,\"colName\":\"quality\",\"membershipFunction\":null}],\"fitness\":null}",
+                str,
                 Operator.class);
         assertEquals(and, operator);
     }

@@ -23,15 +23,13 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class Generator extends Operator {
-    protected String uuid;
     protected Integer depth;
     protected Integer maxChild;
     protected Set<OperatorType> operators;
 
     public Generator() {
-        this.children = new LinkedHashSet<>();
+        super();
         this.operators = new HashSet<>();
-        this.uuid = UUID.randomUUID().toString();
     }
 
     protected Generator(String label, String description, boolean editable, Integer depth, Integer maxChild,

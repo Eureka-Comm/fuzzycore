@@ -30,6 +30,7 @@ public class And extends Operator {
         cpy.setFitness(fitness);
         cpy.setLabel(label);
         cpy.setDescription(description);
+        cpy.setUuid(uuid);
         return cpy;
     }
 

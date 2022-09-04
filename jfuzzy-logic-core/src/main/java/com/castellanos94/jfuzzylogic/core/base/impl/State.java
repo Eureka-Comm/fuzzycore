@@ -7,15 +7,12 @@ import com.castellanos94.jfuzzylogic.core.membershipfunction.MembershipFunction;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.EqualsAndHashCode.Exclude;
 import lombok.NoArgsConstructor;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class State extends AElement {
-    @Exclude
-    protected String uuid;
 
     protected String colName;
     protected MembershipFunction membershipFunction;
