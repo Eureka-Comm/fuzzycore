@@ -342,9 +342,7 @@ public class DiscoveryAlgorithm extends Algorithm {
 
         while (iterator.hasNext()) {
             Generator next = iterator.next();
-            Operator operator = PredicateGenerator.generate(random, next, index < populationSize / 2);
-            operator.setEditable(true);
-            operator.setFrom(next.getUuid());
+            Operator operator = PredicateGenerator.generate(random, next, index < populationSize / 2);            
             if (flag) {
                 return operator;
             } else {

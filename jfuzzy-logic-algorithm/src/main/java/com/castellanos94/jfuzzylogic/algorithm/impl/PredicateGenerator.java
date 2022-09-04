@@ -17,21 +17,33 @@ import com.castellanos94.jfuzzylogic.core.base.impl.Imp;
 import com.castellanos94.jfuzzylogic.core.base.impl.Not;
 import com.castellanos94.jfuzzylogic.core.base.impl.Or;
 import com.castellanos94.jfuzzylogic.core.base.impl.State;
+
 /**
  * TODO : pendiente de corregir
  */
 public class PredicateGenerator {
     public static void main(String[] args) {
+        State b = new State("d");
+        State a = (State) new State("d").setEditable(true);
+        System.out.println(a.hashCode());
+        System.out.println(b.hashCode());
+        System.out.println(a.equals(b));
         Generator generator = new Generator();
         generator.setLabel("mi generador");
-        generator.setDepth(3);
+        generator.setDepth(2);
         generator.add(new State("a"), new State("b"), new State("c"));
-        generator.add( new State("d"), new State("d"));
-        generator.add(OperatorType.IMP, OperatorType.EQV);
+        generator.add(new State("d"), new State("d"));
+        generator.add(OperatorType.IMP, OperatorType.EQV, OperatorType.AND);
+        Generator orNot = new Generator();
+        orNot.setLabel("disyuntivo");
+        orNot.setDepth(2);
+        orNot.add(new State("e"), new State("f"), new State("g"));
+        orNot.add(OperatorType.OR, OperatorType.NOT);
+        generator.add(orNot);
         Random random = new Random(1l);
         random.setSeed(1l);
 
-        int size = 10;
+        int size = 1;
         for (int i = 0; i < size; i++) {
             System.out.println(String.format("%d - %s", (i + 1), generate(random, generator, i < size / 2)));
         }
@@ -44,15 +56,18 @@ public class PredicateGenerator {
             System.out.println("Max child: " + generator.getMaxChild());
         }
         List<State> states = generator.getStates();
+        System.out.println(generator.getLabel() + " " + states);
         if (states.size() < 2) {
             throw new JFuzzyLogicError("At least 2 variables are required to generate");
         }
+        List<Generator> generators = generator.getGenerators();
         OperatorType[] operatorTypes = generator.getOperators()
                 .toArray(new OperatorType[generator.getOperators().size()]);
-        return generateChild(random, generator, states, operatorTypes, balanced);
+        return generateChild(random, generator, states, generators, operatorTypes, balanced);
     }
 
     private static Operator generateChild(Random random, Generator generator, List<State> states,
+            List<Generator> generators,
             OperatorType[] operatorTypes, boolean balanced) {
         Operator root = getInstance(random, operatorTypes[random.nextInt(operatorTypes.length)]);
         root.setEditable(true);
@@ -80,7 +95,8 @@ public class PredicateGenerator {
             } else {
                 throw new JFuzzyLogicAlgorithmError("Not supported generation for " + root.getClass());
             }
-            //System.out.println(String.format("Current %s, Size %d", current.getClass().getSimpleName(), size));
+            // System.out.println(String.format("Current %s, Size %d",
+            // current.getClass().getSimpleName(), size));
             for (int i = 0; i < size; i++) {
                 if (currentLevel >= generator.getDepth() || (!balanced && random.nextDouble() < 0.45)) {
                     State state;
@@ -95,10 +111,11 @@ public class PredicateGenerator {
                             }
                         }
                     }
-                    //System.out.println(String.format("\t\tRoot %s, avalaible %d, %s", current, avalaible.size(), avalaible));
+                    // System.out.println(String.format("\t\tRoot %s, avalaible %d, %s", current,
+                    // avalaible.size(), avalaible));
                     if (!avalaible.isEmpty()) {
                         state = avalaible.get(random.nextInt(avalaible.size())).copy();
-                        //System.out.println(String.format("\t\t\tTo add %s", state));
+                        // System.out.println(String.format("\t\t\tTo add %s", state));
                         current.add(state);
                     } else {
                         if (sibilings.size() < 2) {
@@ -109,14 +126,22 @@ public class PredicateGenerator {
                         }
                     }
                 } else {
-                    Operator tmp = getInstance(random, operatorTypes[random.nextInt(operatorTypes.length)]);
-                    tmp.setEditable(true);
-                    tmp.setFrom(generator.getUuid());
-                    //System.out.println(String.format("\t\t\tTo add %s", tmp));
-                    current.add(tmp);
-                    pending.add(tmp);
+                    Operator tmp;
+                    if (generators.isEmpty() || random.nextDouble() > 0.45) {
+                        tmp = getInstance(random, operatorTypes[random.nextInt(operatorTypes.length)]);
+                        tmp.setEditable(true);
+                        tmp.setFrom(generator.getUuid());
+                        current.add(tmp);
+                        pending.add(tmp);
+                    } else {
+                        tmp = generate(random, generators.get(random.nextInt(generators.size())), balanced);
+                        tmp.setEditable(true);
+                        tmp.setFrom(generator.getUuid());
+                        current.add(tmp);
+                    }
+                    // System.out.println(String.format("\t\t\tTo add %s", tmp));
                 }
-                //System.out.println(String.format("\t%3d - Current %s", i, current));
+                // System.out.println(String.format("\t%3d - Current %s", i, current));
             }
         }
 

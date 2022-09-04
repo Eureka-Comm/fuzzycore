@@ -56,15 +56,13 @@ public class Generator extends Operator {
 
     @JsonIgnore
     public List<State> getStates() {
-        List<State> states = new ArrayList<>();
+        Set<State> states = new HashSet<>();
         for (AElement c : children) {
             if (c instanceof State) {
                 states.add((State) c);
-            } else if (c instanceof Generator) {
-                states.addAll(((Generator) c).getStates());
-            }
+            } 
         }
-        return states;
+        return new ArrayList<>(states);
     }
 
     @JsonIgnore
@@ -73,9 +71,7 @@ public class Generator extends Operator {
         for (AElement c : children) {
             if (c instanceof Generator) {
                 generators.add((Generator) c);
-            } else if (c instanceof Generator) {
-                generators.addAll(((Generator) c).getGenerators());
-            }
+            } 
         }
         return generators;
     }
@@ -104,7 +100,7 @@ public class Generator extends Operator {
 
     @Override
     public boolean add(AElement e) {
-        if (e instanceof Operator) {
+        if (e instanceof Operator && !(e instanceof Generator)) {
             throw new JFuzzyLogicError("Operators cannot be added");
         }
         e.setEditable(true);

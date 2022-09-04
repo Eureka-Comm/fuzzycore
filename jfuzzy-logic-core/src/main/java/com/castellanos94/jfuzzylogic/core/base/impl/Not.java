@@ -18,7 +18,8 @@ public class Not extends Operator {
     public boolean add(AElement e) {
         if (this.children.isEmpty())
             return _add(e);
-        throw new JFuzzyLogicError("maximum arity reached for " + getClass().getSimpleName());
+        throw new JFuzzyLogicError(
+                "maximum arity reached for " + getClass().getSimpleName() + " " + e + " + " + this.children);
     }
 
     @Override
