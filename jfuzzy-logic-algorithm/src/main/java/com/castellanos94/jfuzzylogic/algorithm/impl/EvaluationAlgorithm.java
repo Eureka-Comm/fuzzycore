@@ -125,8 +125,7 @@ public class EvaluationAlgorithm extends Algorithm {
 
     private void fuzzyData() {
         this.data = new HashMap<>();
-        ArrayList<State> states = OperatorUtil.getNodesByClass(predicate, State.class);
-
+        ArrayList<State> states = OperatorUtil.getNodesByClass(predicate, State.class);        
         for (State state : states) {
             if (!table.containsColumn(state.getColName())) {
                 throw new JFuzzyLogicAlgorithmError(String.format("Column %s does not exist for the state %s",

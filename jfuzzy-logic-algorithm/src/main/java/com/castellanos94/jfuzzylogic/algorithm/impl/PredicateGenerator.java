@@ -53,7 +53,6 @@ public class PredicateGenerator {
     public static Operator generate(Random random, Generator generator, boolean balanced) {
         if (generator.getMaxChild() == null || generator.getMaxChild() < 2) {
             generator.setMaxChild(generator.getOperators().size() + 2);
-            System.out.println("Max child: " + generator.getMaxChild());
         }
         List<State> states = generator.getStates();
         if (states.size() < 2) {

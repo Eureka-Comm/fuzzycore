@@ -191,14 +191,14 @@ public class OperatorUtil {
      * @return nodes of class from root
      */
     public static <T> ArrayList<T> getNodesByClass(Operator tree, Class<T> clazz) {
-        Set<T> nodes = new HashSet<>();
+        ArrayList<T> nodes = new ArrayList<>();
         if (clazz == Generator.class) {
             if (clazz.isInstance(tree)) {
                 nodes.add(clazz.cast(tree));
             }
         }
         _getNodesByClass(tree, nodes, clazz);
-        return new ArrayList<>(nodes);
+        return nodes;
     }
 
     /**
@@ -242,7 +242,7 @@ public class OperatorUtil {
         return nr;
     }
 
-    private static <T> void _getNodesByClass(Operator tree, Set<T> nodes, Class<T> clazz) {
+    private static <T> void _getNodesByClass(Operator tree, ArrayList<T> nodes, Class<T> clazz) {
         boolean isOperator = clazz == Operator.class;
         for (AElement element : tree) {
             if (clazz.isInstance(element)) {
@@ -251,7 +251,6 @@ public class OperatorUtil {
                 } else if (!isOperator) {
                     nodes.add(clazz.cast(element));
                 }
-
             }
             if (element instanceof Operator && !(element instanceof Generator)) {
                 _getNodesByClass((Operator) element, nodes, clazz);

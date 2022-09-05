@@ -37,23 +37,24 @@ public class App {
                                 new State("high quality", "quality", new Sigmoid(5.5, 4.)));
                 predicate = new Imp(new State("alcohol"),
                                 new State("high quality", "quality", new Sigmoid(5.5, 4.)));
-                
+
                 Generator generator = new Generator();
                 generator.setLabel("Mi generador");
                 generator.setDepth(2);
-                generator.setMaxChild(3);
+                //generator.setMaxChild(3);
                 table.columnNames().forEach(cn -> {
                         generator.add(new State(cn));
                 });
-                generator.add(OperatorType.AND, OperatorType.EQV);
+                generator.add(OperatorType.AND, OperatorType.EQV, OperatorType.IMP, OperatorType.OR, OperatorType.NOT);
                 predicate = generator;
                 log.error("Predicate guide {}", predicate);
-                long maximumTime = 1000 * 5; // 5 min
+                long maximumTime = 60 * 1000 * 3; // 5 min
                 DiscoveryAlgorithm algorithm = new DiscoveryAlgorithm(predicate, maximumTime, logic, table, 0.95, 0.95,
                                 0.1, 15, 100, 0.1, 0.95, 0.2, 20, 20);
                 algorithm.execute();
 
-                log.error("Elapsed time {} ms", algorithm.getComputeTime());
+                log.error("Elapsed time {} ms, limit time {} ms, diff {} ms", algorithm.getComputeTime(), maximumTime,
+                                (maximumTime - algorithm.getComputeTime()));
                 DiscoveryResult result = algorithm.getResult();
                 log.error("Number of predicates discovery {}", result.getData().size());
 

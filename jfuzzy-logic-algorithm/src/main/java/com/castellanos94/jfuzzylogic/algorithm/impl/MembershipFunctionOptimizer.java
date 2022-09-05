@@ -199,13 +199,20 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
 
     @Override
     protected void evaluate(List<State> states, MembershipFunctionChromosome solution) {
-        // Operator operator = (Operator) predicate.copy();
-        // ArrayList<State> _states = OperatorUtil.getNodesByClass(operator,
-        // State.class);
+        /*
+         * Operator operator = (Operator) predicate.copy();
+         * ArrayList<State> _states = OperatorUtil.getNodesByClass(operator,
+         * State.class);
+         */
         for (State state : states) {
             // State toUpd = _states.get(_states.indexOf(state));
-            state.setMembershipFunction(solution.getFunction(state.getUuid()));
+            MembershipFunction function = solution.getFunction(state.getUuid());
+            if (function == null) {
+                log.error("Error setting function to {} from {} ", state.getLabel(), predicate);
+            }
+            state.setMembershipFunction(function);
         }
+        //log.error("Predicate valid ? {} - {}",OperatorUtil.isValid(predicate, true),predicate);
         new EvaluationAlgorithm(predicate, logic, table).execute();
         solution.setFitness(predicate.getFitness());
     }
