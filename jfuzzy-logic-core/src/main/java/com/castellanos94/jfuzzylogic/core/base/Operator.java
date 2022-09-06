@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 
+import com.castellanos94.jfuzzylogic.core.base.impl.Generator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.EqualsAndHashCode;
@@ -48,7 +49,9 @@ public abstract class Operator extends AElement implements Comparable<Operator>,
     public String toString() {
         StringBuffer buffer = new StringBuffer(String.format("(%s", getClass().getSimpleName().toUpperCase()));
         this.children.forEach(c -> {
-            if (c instanceof Operator) {
+            if (c instanceof Generator) {
+                buffer.append(String.format(" \"%s\"", c.getLabel()));
+            } else if (c instanceof Operator) {
                 buffer.append(" ").append(c.toString());
             } else {
                 buffer.append(String.format(" \"%s\"", c.getLabel()));

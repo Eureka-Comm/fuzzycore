@@ -34,7 +34,6 @@ import tech.tablesaw.api.Table;
  * @apiNote {@link FPGRepair} default repair
  */
 public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
-    @SuppressWarnings("unused")
     private static final Logger log = LogManager.getLogger(MembershipFunctionOptimizer.class);
     /**
      * Maximum process iterations

@@ -47,6 +47,7 @@ public class App {
                 });
                 generator.add(OperatorType.AND, OperatorType.EQV, OperatorType.IMP, OperatorType.OR, OperatorType.NOT);
                 predicate = generator;
+                predicate = new Imp(generator, new State("high quality", "quality", new Sigmoid(5.5, 4.)));
                 log.error("Predicate guide {}", predicate);
                 long maximumTime = 60 * 1000 * 20; // 5 min
                 DiscoveryAlgorithm algorithm = new DiscoveryAlgorithm(predicate, maximumTime, logic, table, 0.95, 0.95,

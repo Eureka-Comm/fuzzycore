@@ -14,7 +14,6 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.units.qual.C;
 
 import com.castellanos94.jfuzzylogic.algorithm.AMembershipFunctionOptimizer;
 import com.castellanos94.jfuzzylogic.algorithm.Algorithm;
@@ -158,7 +157,10 @@ public class DiscoveryAlgorithm extends Algorithm {
         this.optimizer = new MembershipFunctionOptimizer(logic, table, adjMaxIteration, adjPopulationSize,
                 adjMinTruthValue, adjCrossoverRate, adjMutationRate);
         this.random = new Random();
-        this.maximumToleranceForRepeated = populationSize / 10;
+        this.maximumToleranceForRepeated = populationSize / 20;
+        if (maximumToleranceForRepeated < 2) {
+            this.maximumNumberResult = 2;
+        }
     }
 
     @Override
@@ -279,10 +281,10 @@ public class DiscoveryAlgorithm extends Algorithm {
                 log.error("Diversity {}, maximum tolerance for repeated predicates {}", expressionMap.size(),
                         maximumToleranceForRepeated);
                 expressionMap.forEach((k, v) -> {
-                    if (v.size() > maximumToleranceForRepeated / 2) {
+                    if (v.size() > maximumToleranceForRepeated) {
                         log.error("\t {} - {}", v.size(), k);
                         if (v.size() > maximumToleranceForRepeated) {
-                            indexToReplace.addAll(v.subList(0, v.size() - 2));
+                            indexToReplace.addAll(v.subList(0, v.size() - 1));
                         }
                     }
                 });
@@ -378,6 +380,7 @@ public class DiscoveryAlgorithm extends Algorithm {
         return c;
     }
 
+    @SuppressWarnings("unused")
     private int getMinimumChildRequired(Operator c) {
         Objects.requireNonNull(c);
         if (c instanceof And || c instanceof Or || c instanceof Imp || c instanceof Eqv) {
@@ -408,26 +411,25 @@ public class DiscoveryAlgorithm extends Algorithm {
     private Operator createRandomIndividual(List<Generator> generators, boolean isBalanced) {
         boolean flag = predicate instanceof Generator;
         Iterator<Generator> iterator = generators.iterator();
-        List<Operator> offspring = new ArrayList<>();
+        List<AElement> offspring = new ArrayList<>();
 
         while (iterator.hasNext()) {
             Generator next = iterator.next();
-            Operator operator = PredicateGenerator.generate(random, next, isBalanced);
+            AElement e = PredicateGenerator.generate(random, flag ? null : predicate, next, isBalanced);
             if (flag) {
-                return operator;
+                return (Operator) e;
             } else {
-                offspring.add(operator);
+                offspring.add(e);
             }
         }
         Operator p = predicate.copy();
-        for (Operator operator : offspring) {
-            Generator g = generators.stream().filter(gs -> gs.getUuid().equals(operator.getFrom())).findAny().get();
-            Operator root = OperatorUtil.getRoot(p, operator);
-            if (root != null && root != p) {
-                p = OperatorUtil.replace(root, g, operator);
+        for (AElement element : offspring) {
+            Generator g = generators.stream().filter(gs -> gs.getUuid().equals(element.getFrom())).findAny().get();
+            if (p != null) {
+                p = OperatorUtil.replace(p, g, element);
             } else {
                 log.error("Predicate {}", p);
-                log.error("Child {} from {}", operator, g);
+                log.error("Child {} from {}", element, g);
                 throw new JFuzzyLogicAlgorithmError(
                         "Illegal assignment at createRandomIndividual with multiple generators");
             }
