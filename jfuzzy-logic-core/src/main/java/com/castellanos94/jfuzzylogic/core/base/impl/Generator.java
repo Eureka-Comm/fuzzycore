@@ -122,7 +122,9 @@ public class Generator extends Operator {
     public Generator copy() {
         Set<AElement> cpy = new HashSet<>();
         children.forEach(c -> cpy.add(c.copy()));
-        return new Generator(label, description, editable, depth, maxChild, cpy, operators, uuid);
+        Generator g = new Generator(label, description, editable, depth, maxChild, cpy, operators, uuid);
+        g.setFrom(from);
+        return g;
     }
 
 }

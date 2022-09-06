@@ -10,6 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,6 +24,7 @@ import com.castellanos94.jfuzzylogic.core.base.AElement;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
 import com.castellanos94.jfuzzylogic.core.base.impl.DiscoveryResult;
 import com.castellanos94.jfuzzylogic.core.base.impl.Generator;
+import com.castellanos94.jfuzzylogic.core.base.impl.State;
 import com.castellanos94.jfuzzylogic.core.logic.Logic;
 
 import tech.tablesaw.api.Table;
@@ -151,7 +154,7 @@ public class DiscoveryAlgorithm extends Algorithm {
         this.optimizer = new MembershipFunctionOptimizer(logic, table, adjMaxIteration, adjPopulationSize,
                 adjMinTruthValue, adjCrossoverRate, adjMutationRate);
         this.random = new Random();
-        this.maximumToleranceForRepeated =  populationSize / 10;
+        this.maximumToleranceForRepeated = populationSize / 10;
     }
 
     @Override
@@ -165,7 +168,7 @@ public class DiscoveryAlgorithm extends Algorithm {
             Operator[] population = new Operator[populationSize];
             // Generate random population
             for (int i = 0; i < populationSize; i++) {
-                population[i] = createRandomIndividual(generators, i);
+                population[i] = createRandomIndividual(generators, i < populationSize / 2);
             }
             // Evaluate initial populaiton
             Arrays.parallelSetAll(population, idx -> {
@@ -207,7 +210,7 @@ public class DiscoveryAlgorithm extends Algorithm {
                     Operator[] nOperators = new Operator[indexToReplace.size()];
                     replaceIterator = indexToReplace.iterator();
                     for (int idx = 0; idx < nOperators.length; idx++) {
-                        nOperators[idx] = createRandomIndividual(generators, replaceIterator.next());
+                        nOperators[idx] = createRandomIndividual(generators, random.nextDouble() < 0.5);
                     }
                     Arrays.parallelSetAll(nOperators, idx -> {
                         return optimizer.copy().execute(nOperators[idx]).copy();
@@ -228,13 +231,13 @@ public class DiscoveryAlgorithm extends Algorithm {
                     // crossover
                     a = population[aIndex];
                     b = population[bIndex];
-                    c = crossover(a, b);
+                    c = crossover(a, b, generators);
                     c = mutation(c, generators);
                     offspring[i] = c;
                 }
                 // evaluate offspring
-                Arrays.parallelSetAll(offspring, idx -> {
-                    return optimizer.copy().execute(offspring[idx]).copy();
+                Arrays.parallelSetAll(offspring, _idx -> {
+                    return optimizer.copy().execute(offspring[_idx]).copy();
                 });
                 // Replace population
                 for (int i = 0; i < offspringSize; i++) {
@@ -275,16 +278,18 @@ public class DiscoveryAlgorithm extends Algorithm {
                     if (v.size() > maximumToleranceForRepeated / 2) {
                         log.error("\t {} - {}", v.size(), k);
                         if (v.size() > maximumToleranceForRepeated) {
-                            indexToReplace.addAll(v.subList(0, maximumToleranceForRepeated / 2));
+                            indexToReplace.addAll(v.subList(0, v.size() / 2));
                         }
                     }
                 });
-                if (expressionMap.size() < ((2 * populationSize) / 5)) {
+                if (expressionMap.size() < ((2 * populationSize) / 5) && indexToReplace.size() < (populationSize / 2)) {
                     int cnt = 0;
-                    while (cnt < (2 * populationSize) / 5) {
+                    int intents = 0;
+                    while (cnt < (2 * populationSize) / 5 && intents < 2 * populationSize) {
                         if (indexToReplace.add(random.nextInt(populationSize))) {
                             cnt++;
                         }
+                        intents++;
                     }
                 }
 
@@ -292,13 +297,17 @@ public class DiscoveryAlgorithm extends Algorithm {
                 elapsedTime = System.currentTimeMillis() - startTime;
                 currentIteration++;
             }
-
+            Arrays.sort(population, Collections.reverseOrder());
             if (this.discoveryPredicates.size() < 2) {
                 int size = Math.min(10 - this.discoveryPredicates.size(), populationSize);
                 log.error("Few results exist {}, copying the best ones {}", this.discoveryPredicates, size);
-                Arrays.sort(population, Collections.reverseOrder());
                 for (int i = 0; i < size; i++) {
                     this.discoveryPredicates.add(population[i]);
+                }
+            }
+            if (this.discoveryPredicates.size() < maximumNumberResult) {
+                for (Operator p : population) {
+                    log.error("{} - {}", p.getFitness(), p);
                 }
             }
         }
@@ -308,30 +317,63 @@ public class DiscoveryAlgorithm extends Algorithm {
 
     private Operator mutation(Operator c, List<Generator> generators) {
         if (random.nextDouble() <= mutationRate) {
-            return createRandomIndividual(generators, random.nextInt());
+            return createRandomIndividual(generators, random.nextDouble() < 0.5);
         }
         return c;
     }
 
-    private Operator crossover(Operator a, Operator b) {
+    private Operator crossover(Operator a, Operator b, List<Generator> generators) {
         Operator c = a.copy();
         List<AElement> aEdit = OperatorUtil.getEditableNode(a);
         List<AElement> bEdit = OperatorUtil.getEditableNode(b);
-        if (aEdit.isEmpty() || bEdit.isEmpty()) {
+        if (a.toString().equals(b.toString())) {
+            log.error("Same parents {}", a);
+        }
+        if (bEdit.isEmpty() || aEdit.isEmpty()) {
             log.error("A {} - {}", a, aEdit.size());
             log.error("B {} - {}", b, bEdit.size());
             throw new JFuzzyLogicAlgorithmError("Not editable nodes for crossover " + predicate);
         }
+
         AElement aCand = aEdit.get(random.nextInt(aEdit.size()));
-        int aNivel = OperatorUtil.dfs(a, aCand);
+        int maxA = -1;
+        for (Generator g : generators) {
+            if (g.getUuid().equals(aCand.getFrom())) {
+                maxA = g.getDepth();
+                break;
+            }
+        }
+        try {
+            Iterator<AElement> iterator = bEdit.iterator();
+            AElement next;
+            while (iterator.hasNext()) {
+                next = iterator.next();
+                if (!aCand.getFrom().equals(next.getFrom())) {
+                    iterator.remove();
+                }
+            }
+        } catch (NullPointerException e) {
+            log.error("A {} from {} with max {}, {}", aCand.getLabel() == null ? aCand : aCand.getLabel(),
+                    aCand.getFrom(), maxA);
+            log.error("B edit");
+            for (AElement aElement : bEdit) {
+                log.error("{}", aElement);
+            }
+            throw e;
+        }
         AElement bCand;
         int bNivel;
+        int intents = 0;
+        List<AElement> sibilings = aCand instanceof State ? Collections.emptyList()
+                : OperatorUtil.getSuccessors((Operator) aCand);
         do {
             bCand = bEdit.get(random.nextInt(bEdit.size()));
-            bNivel = OperatorUtil.dfs(b, bCand);
-        } while (bNivel > aNivel);
-        OperatorUtil.replace(c, aCand, bCand);
-        return c;
+            bNivel = OperatorUtil.getMaximumLeafLevel(bCand);
+            intents++;
+
+        } while ((bNivel <= maxA || sibilings.contains(bCand)) && intents < bEdit.size() * 2);
+
+        return OperatorUtil.replace(c, aCand, bCand);
     }
 
     protected void setRun(boolean flag) {
@@ -351,14 +393,14 @@ public class DiscoveryAlgorithm extends Algorithm {
         return -1;
     }
 
-    private Operator createRandomIndividual(List<Generator> generators, int index) {
+    private Operator createRandomIndividual(List<Generator> generators, boolean isBalanced) {
         boolean flag = predicate instanceof Generator;
         Iterator<Generator> iterator = generators.iterator();
         List<Operator> offspring = new ArrayList<>();
 
         while (iterator.hasNext()) {
             Generator next = iterator.next();
-            Operator operator = PredicateGenerator.generate(random, next, index < populationSize / 2);
+            Operator operator = PredicateGenerator.generate(random, next, isBalanced);
             if (flag) {
                 return operator;
             } else {

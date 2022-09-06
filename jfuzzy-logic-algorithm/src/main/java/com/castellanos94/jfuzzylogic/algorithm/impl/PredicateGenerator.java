@@ -80,7 +80,7 @@ public class PredicateGenerator {
         int index = 0;
         while (index < pending.size()) {
             current = pending.get(index++);
-            chidren = OperatorUtil.getNodesByClass(current, AElement.class);
+            chidren = OperatorUtil.getNodesByClass(current, AElement.class);            
             if (!chidren.contains(current)) {
                 currentLevel++;
             }
@@ -118,7 +118,11 @@ public class PredicateGenerator {
                     } else {
                         if (sibilings.size() < 2) {
                             Not nt = new Not();
+                            nt.setEditable(true);
+                            nt.setFrom(generator.getFrom());
                             state = states.get(random.nextInt(states.size())).copy();
+                            state.setEditable(true);
+                            state.setFrom(generator.getFrom());
                             nt.add(state);
                             current.add(nt);
                         }

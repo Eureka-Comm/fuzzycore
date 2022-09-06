@@ -2,11 +2,9 @@ package com.castellanos94.jfuzzylogic.core;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.castellanos94.jfuzzylogic.core.base.AElement;
@@ -27,6 +25,36 @@ import com.castellanos94.jfuzzylogic.core.base.impl.State;
  * @see Operator
  */
 public class OperatorUtil {
+    /**
+     * Obtains the maximum level of the element
+     * 
+     * @param root
+     * @return
+     */
+    public static int getMaximumLeafLevel(AElement element) {
+        if (element instanceof State || element instanceof Generator) {
+            return 1;
+        }
+        Operator root = (Operator) element;
+        ArrayList<Operator> operators = getNodesByClass(root, Operator.class);
+        if (!operators.isEmpty()) {
+            int max = 0;
+            for (Operator e : operators) {
+                int lvl = getMaximumLeafLevel((Operator) e) + 1;
+                max = Math.max(max, lvl);
+            }
+            return max;
+        }
+        return 1;
+    }
+
+    /**
+     * Valide predicate/state
+     * 
+     * @param element           to evaluate
+     * @param includeMembership if its true performance membership validation
+     * @return
+     */
     public static boolean isValid(AElement element, boolean... includeMembership) {
         if (element == null) {
             return false;
@@ -279,5 +307,20 @@ public class OperatorUtil {
             }
         }
         return null;
+    }
+
+    /**
+     * Obtains successors
+     * 
+     * @param root parent
+     * @return direct child
+     */
+    public static List<AElement> getSuccessors(Operator root) {
+        Objects.requireNonNull(root);
+        List<AElement> elements = new ArrayList<>();
+        for (AElement e : root) {
+            elements.add(e);
+        }
+        return elements;
     }
 }

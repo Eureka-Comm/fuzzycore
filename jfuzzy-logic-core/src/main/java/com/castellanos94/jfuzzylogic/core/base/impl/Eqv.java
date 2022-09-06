@@ -31,6 +31,7 @@ public class Eqv extends Operator {
         cpy.setLabel(label);
         cpy.setDescription(description);
         cpy.setUuid(uuid);
+        cpy.setFrom(from);
         return cpy;
     }
 

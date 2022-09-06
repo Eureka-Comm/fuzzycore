@@ -20,7 +20,25 @@ import com.castellanos94.jfuzzylogic.core.base.impl.State;
 import com.castellanos94.jfuzzylogic.core.membershipfunction.impl.FPG;
 
 public class OperatorUtilTest {
+    @Test
+    public void getMaxDept(){
+        And and = new And();
+        int level = OperatorUtil.getMaximumLeafLevel(and);
+        and.add(new State("a"));
+        and.add(new Not(new State("b")));
+        and.add(new Or(new State("c"), new State("d"), new Not(new Imp(new State("e"), new Not(new State("f"))))));
+        and.add(new Not());
+        and.add(new Not());
 
+        System.out.println(and);
+
+        level = OperatorUtil.getMaximumLeafLevel(and);
+        System.out.println(level);
+        Operator tmp = OperatorUtil.getRoot(and, new State("e"));
+        System.out.println(tmp);
+        level = OperatorUtil.getMaximumLeafLevel(tmp);
+        System.out.println(level);
+    }
     @Test
     public void checkValidOperators() {
         And and = new And();
