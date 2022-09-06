@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -110,7 +111,14 @@ public class EvaluationAlgorithm extends Algorithm {
         } else if (node instanceof Eqv) {
             Eqv eqv = (Eqv) node;
             Iterator<AElement> iterator = eqv.iterator();
-            return logic.eqv(fitValue(iterator.next(), index), fitValue(iterator.next(), index));
+            double rs ;
+            try {
+                rs = logic.eqv(fitValue(iterator.next(), index), fitValue(iterator.next(), index));
+            } catch (NoSuchElementException ex) {
+                log.error("Predicate {}", eqv);
+                throw ex;
+            }
+            return rs;
         } else if (node instanceof Not) {
             return logic.not(fitValue(((Not) node).iterator().next(), index));
         } else if (node instanceof State) {
@@ -125,7 +133,7 @@ public class EvaluationAlgorithm extends Algorithm {
 
     private void fuzzyData() {
         this.data = new HashMap<>();
-        ArrayList<State> states = OperatorUtil.getNodesByClass(predicate, State.class);        
+        ArrayList<State> states = OperatorUtil.getNodesByClass(predicate, State.class);
         for (State state : states) {
             if (!table.containsColumn(state.getColName())) {
                 throw new JFuzzyLogicAlgorithmError(String.format("Column %s does not exist for the state %s",

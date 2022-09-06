@@ -113,6 +113,8 @@ public class PredicateGenerator {
                     // avalaible.size(), avalaible));
                     if (!avalaible.isEmpty()) {
                         state = avalaible.get(random.nextInt(avalaible.size())).copy();
+                        state.setFrom(generator.getUuid());
+                        state.setEditable(true);
                         // System.out.println(String.format("\t\t\tTo add %s", state));
                         current.add(state);
                     } else {
@@ -133,7 +135,7 @@ public class PredicateGenerator {
                         tmp = OperatorUtil.getInstance(operatorTypes[random.nextInt(operatorTypes.length)]);
                         tmp.setEditable(true);
                         tmp.setFrom(generator.getUuid());
-                        current.add(tmp);
+                        current.add(tmp);// checar si es falso agregar otro
                         pending.add(tmp);
                     } else {
                         tmp = generate(random, generators.get(random.nextInt(generators.size())), balanced);

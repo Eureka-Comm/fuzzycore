@@ -8,13 +8,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.checkerframework.checker.units.qual.C;
 
 import com.castellanos94.jfuzzylogic.algorithm.AMembershipFunctionOptimizer;
 import com.castellanos94.jfuzzylogic.algorithm.Algorithm;
@@ -22,9 +22,13 @@ import com.castellanos94.jfuzzylogic.algorithm.JFuzzyLogicAlgorithmError;
 import com.castellanos94.jfuzzylogic.core.OperatorUtil;
 import com.castellanos94.jfuzzylogic.core.base.AElement;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
+import com.castellanos94.jfuzzylogic.core.base.impl.And;
 import com.castellanos94.jfuzzylogic.core.base.impl.DiscoveryResult;
+import com.castellanos94.jfuzzylogic.core.base.impl.Eqv;
 import com.castellanos94.jfuzzylogic.core.base.impl.Generator;
-import com.castellanos94.jfuzzylogic.core.base.impl.State;
+import com.castellanos94.jfuzzylogic.core.base.impl.Imp;
+import com.castellanos94.jfuzzylogic.core.base.impl.Not;
+import com.castellanos94.jfuzzylogic.core.base.impl.Or;
 import com.castellanos94.jfuzzylogic.core.logic.Logic;
 
 import tech.tablesaw.api.Table;
@@ -204,8 +208,8 @@ public class DiscoveryAlgorithm extends Algorithm {
             long currentIteration = 1;
             Iterator<Integer> replaceIterator;
             while (discoveryPredicates.size() < maximumNumberResult && elapsedTime < maximumTime && run) {
-                log.error("Current iteration {}, time {} ms, to replace {}", currentIteration, elapsedTime,
-                        indexToReplace.size());
+                log.error("Current iteration {}, time {} ms, results {}, to replace {}", currentIteration, elapsedTime,
+                        discoveryPredicates.size(), indexToReplace.size());
                 if (!indexToReplace.isEmpty()) {
                     Operator[] nOperators = new Operator[indexToReplace.size()];
                     replaceIterator = indexToReplace.iterator();
@@ -278,7 +282,7 @@ public class DiscoveryAlgorithm extends Algorithm {
                     if (v.size() > maximumToleranceForRepeated / 2) {
                         log.error("\t {} - {}", v.size(), k);
                         if (v.size() > maximumToleranceForRepeated) {
-                            indexToReplace.addAll(v.subList(0, v.size() / 2));
+                            indexToReplace.addAll(v.subList(0, v.size() - 2));
                         }
                     }
                 });
@@ -311,6 +315,7 @@ public class DiscoveryAlgorithm extends Algorithm {
                 }
             }
         }
+        Collections.sort(discoveryPredicates, Collections.reverseOrder());
         this.endTime = System.currentTimeMillis();
         log.error("Discovery Results {}, elapsed time {} ms", this.discoveryPredicates.size(), this.getComputeTime());
     }
@@ -323,57 +328,64 @@ public class DiscoveryAlgorithm extends Algorithm {
     }
 
     private Operator crossover(Operator a, Operator b, List<Generator> generators) {
-        Operator c = a.copy();
+        if (a.toString().equals(b.toString())) {
+            return createRandomIndividual(generators, random.nextDouble() < this.crossoverRate);
+        }
+
         List<AElement> aEdit = OperatorUtil.getEditableNode(a);
         List<AElement> bEdit = OperatorUtil.getEditableNode(b);
-        if (a.toString().equals(b.toString())) {
-            log.error("Same parents {}", a);
-        }
+
         if (bEdit.isEmpty() || aEdit.isEmpty()) {
             log.error("A {} - {}", a, aEdit.size());
             log.error("B {} - {}", b, bEdit.size());
             throw new JFuzzyLogicAlgorithmError("Not editable nodes for crossover " + predicate);
         }
+        Operator c = a.copy();// OperatorUtil.getInstance(OperatorUtil.getType(a));
 
-        AElement aCand = aEdit.get(random.nextInt(aEdit.size()));
-        int maxA = -1;
-        for (Generator g : generators) {
-            if (g.getUuid().equals(aCand.getFrom())) {
-                maxA = g.getDepth();
-                break;
-            }
+        if (!OperatorUtil.isValid(c)) {
+            log.error("Copy Invalid predicate {}", c);
         }
-        try {
-            Iterator<AElement> iterator = bEdit.iterator();
-            AElement next;
-            while (iterator.hasNext()) {
-                next = iterator.next();
-                if (!aCand.getFrom().equals(next.getFrom())) {
-                    iterator.remove();
+        List<AElement> successors = OperatorUtil.getSuccessors(c);
+        int minSize = successors.size();/*
+                                         * (int) (successors.size() > 2 ? Utils.randomNumber(random, 2.0, (double)
+                                         * successors.size())
+                                         * : getMinimumChildRequired(c));
+                                         */
+        int currentSize = 0;
+        AElement aux, nVal;
+        while (currentSize < minSize) {
+            aux = successors.get(currentSize);
+            if (aux.isEditable()) {
+                Operator tmp;
+                int intents = 0;
+                if (random.nextDouble() <= this.crossoverRate) {
+                    do {
+                        nVal = bEdit.get(random.nextInt(bEdit.size())).copy();
+                        tmp = OperatorUtil.replace(c, aux, nVal);
+                        intents++;
+                    } while (!OperatorUtil.isValid(tmp) && intents < bEdit.size() * 2);
+                    if (intents > bEdit.size() * 2) {
+                        return createRandomIndividual(generators, random.nextDouble() <= this.crossoverRate);
+                    }
                 }
             }
-        } catch (NullPointerException e) {
-            log.error("A {} from {} with max {}, {}", aCand.getLabel() == null ? aCand : aCand.getLabel(),
-                    aCand.getFrom(), maxA);
-            log.error("B edit");
-            for (AElement aElement : bEdit) {
-                log.error("{}", aElement);
-            }
-            throw e;
+            currentSize++;
         }
-        AElement bCand;
-        int bNivel;
-        int intents = 0;
-        List<AElement> sibilings = aCand instanceof State ? Collections.emptyList()
-                : OperatorUtil.getSuccessors((Operator) aCand);
-        do {
-            bCand = bEdit.get(random.nextInt(bEdit.size()));
-            bNivel = OperatorUtil.getMaximumLeafLevel(bCand);
-            intents++;
 
-        } while ((bNivel <= maxA || sibilings.contains(bCand)) && intents < bEdit.size() * 2);
+        if (!OperatorUtil.isValid(c)) {
+            log.error("Invalid predicate {}", c);
+        }
+        return c;
+    }
 
-        return OperatorUtil.replace(c, aCand, bCand);
+    private int getMinimumChildRequired(Operator c) {
+        Objects.requireNonNull(c);
+        if (c instanceof And || c instanceof Or || c instanceof Imp || c instanceof Eqv) {
+            return 2;
+        }
+        if (c instanceof Not)
+            return 1;
+        throw new JFuzzyLogicAlgorithmError("Unknown minimum type for " + c);
     }
 
     protected void setRun(boolean flag) {
@@ -419,6 +431,9 @@ public class DiscoveryAlgorithm extends Algorithm {
                 throw new JFuzzyLogicAlgorithmError(
                         "Illegal assignment at createRandomIndividual with multiple generators");
             }
+        }
+        if (!OperatorUtil.isValid(p)) {
+            log.error("Invalid {}", p);
         }
         return p;
     }

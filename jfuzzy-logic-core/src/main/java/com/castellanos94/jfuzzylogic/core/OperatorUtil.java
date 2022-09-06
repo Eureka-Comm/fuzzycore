@@ -160,7 +160,7 @@ public class OperatorUtil {
         if (operator instanceof Eqv) {
             return OperatorType.EQV;
         }
-        throw new JFuzzyLogicError("Unkown type for " + operator.getClass().getSimpleName());
+        throw new JFuzzyLogicError("Unknown type for " + operator.getClass().getSimpleName());
     }
 
     /**
