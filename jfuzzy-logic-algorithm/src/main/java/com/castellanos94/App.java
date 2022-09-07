@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.castellanos94.jfuzzylogic.algorithm.impl.DiscoveryAlgorithm;
+import com.castellanos94.jfuzzylogic.core.OperatorUtil;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
 import com.castellanos94.jfuzzylogic.core.base.OperatorType;
 import com.castellanos94.jfuzzylogic.core.base.impl.DiscoveryResult;
@@ -47,9 +48,10 @@ public class App {
                 });
                 generator.add(OperatorType.AND, OperatorType.EQV, OperatorType.IMP, OperatorType.OR, OperatorType.NOT);
                 predicate = generator;
-                predicate = new Imp(generator, new State("high quality", "quality", new Sigmoid(5.5, 4.)));
+                State q = new State("high qualit0y", "quality", new Sigmoid(5.5, 4.));
+                predicate = new Imp(generator, q);
                 log.error("Predicate guide {}", predicate);
-                long maximumTime = 60 * 1000 * 20; // 5 min
+                long maximumTime = 60 * 1000 * 5; // 5 min
                 DiscoveryAlgorithm algorithm = new DiscoveryAlgorithm(predicate, maximumTime, logic, table, 0.95, 0.95,
                                 0.1, 100, 100, 0.1, 0.95, 0.2, 20, 20);
                 algorithm.execute();
@@ -63,7 +65,7 @@ public class App {
                 log.error("End time {}", new Date(result.getEndTime()));
                 log.error("Fitness - Discovery Predicate");
                 for (Operator p : result.getData()) {
-                        log.error("{} - {}", p.getFitness(), p.toString());
+                        log.error("Valid? {} :{} - {} - {} ", OperatorUtil.isValid(p, true),p.getFitness(), p.toString(), OperatorUtil.getSuccessors(p).stream().filter(e -> e.equals(q)).map(e-> (State)q).findFirst().get().getMembershipFunction());
                 }
         }
 }

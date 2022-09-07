@@ -210,8 +210,8 @@ public class DiscoveryAlgorithm extends Algorithm {
             long currentIteration = 1;
             Iterator<Integer> replaceIterator;
             while (discoveryPredicates.size() < maximumNumberResult && elapsedTime < maximumTime && run) {
-                log.error("Current iteration {}, time {} ms, results {}, to replace {}", currentIteration, elapsedTime,
-                        discoveryPredicates.size(), indexToReplace.size());
+                log.error("Current iteration {}, results {},  time {} ms, to replace {}", currentIteration,
+                        discoveryPredicates.size(), elapsedTime, indexToReplace.size());
                 if (!indexToReplace.isEmpty()) {
                     Operator[] nOperators = new Operator[indexToReplace.size()];
                     replaceIterator = indexToReplace.iterator();
@@ -278,11 +278,11 @@ public class DiscoveryAlgorithm extends Algorithm {
                     }
                 }
                 // We check if there is no stagnation in the search
-                log.error("Diversity {}, maximum tolerance for repeated predicates {}", expressionMap.size(),
-                        maximumToleranceForRepeated);
+                // log.error("Diversity {}, maximum tolerance for repeated predicates {}",
+                // expressionMap.size(),maximumToleranceForRepeated);
                 expressionMap.forEach((k, v) -> {
                     if (v.size() > maximumToleranceForRepeated) {
-                        log.error("\t {} - {}", v.size(), k);
+                        // log.error("\t {} - {}", v.size(), k);
                         if (v.size() > maximumToleranceForRepeated) {
                             indexToReplace.addAll(v.subList(0, v.size() - 1));
                         }
@@ -291,7 +291,7 @@ public class DiscoveryAlgorithm extends Algorithm {
                 if (expressionMap.size() < ((2 * populationSize) / 5) && indexToReplace.size() < (populationSize / 2)) {
                     int cnt = 0;
                     int intents = 0;
-                    while (cnt < (2 * populationSize) / 5 && intents < 2 * populationSize) {
+                    while (cnt < (3 * populationSize) / 5 && intents < 2 * populationSize) {
                         if (indexToReplace.add(random.nextInt(populationSize))) {
                             cnt++;
                         }
@@ -309,11 +309,6 @@ public class DiscoveryAlgorithm extends Algorithm {
                 log.error("Few results exist {}, copying the best ones {}", this.discoveryPredicates, size);
                 for (int i = 0; i < size; i++) {
                     this.discoveryPredicates.add(population[i]);
-                }
-            }
-            if (this.discoveryPredicates.size() < maximumNumberResult) {
-                for (Operator p : population) {
-                    log.error("{} - {}", p.getFitness(), p);
                 }
             }
         }
