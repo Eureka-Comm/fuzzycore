@@ -28,6 +28,7 @@ import com.castellanos94.jfuzzylogic.core.base.impl.Generator;
 import com.castellanos94.jfuzzylogic.core.base.impl.Imp;
 import com.castellanos94.jfuzzylogic.core.base.impl.Not;
 import com.castellanos94.jfuzzylogic.core.base.impl.Or;
+import com.castellanos94.jfuzzylogic.core.base.impl.State;
 import com.castellanos94.jfuzzylogic.core.logic.Logic;
 
 import tech.tablesaw.api.Table;
@@ -166,9 +167,15 @@ public class DiscoveryAlgorithm extends Algorithm {
         this.discoveryPredicates = new ArrayList<>();
         ArrayList<Generator> generators = OperatorUtil.getNodesByClass(predicate, Generator.class);
         if (generators.isEmpty()) {
-            for (int i = 0; i < this.maximumNumberResult; i++) {
-                this.discoveryPredicates.add(optimizer.execute(predicate).copy());   
-            }            
+            ArrayList<State> states = OperatorUtil.getNodesByClass(predicate, State.class);
+            if (states.stream().anyMatch(s -> s.getMembershipFunction() == null || !s.getMembershipFunction().isValid()
+                    || s.getMembershipFunction().isEditable())) {
+                for (int i = 0; i < this.maximumNumberResult; i++) {
+                    this.discoveryPredicates.add(optimizer.execute(predicate.copy()).copy());
+                }
+            } else {
+                this.discoveryPredicates.add(optimizer.execute(predicate).copy());
+            }
         } else {
             Operator[] population = new Operator[populationSize];
             // Generate random population
@@ -178,7 +185,7 @@ public class DiscoveryAlgorithm extends Algorithm {
             // Evaluate initial population
             Arrays.parallelSetAll(population, idx -> optimizer.copy().execute(population[idx]).copy());
             Arrays.sort(population, Collections.reverseOrder());
-            log.info("End time for evaluation of random population: {} ms", (System.currentTimeMillis() - startTime));
+            log.debug("End time for evaluation of random population: {} ms", (System.currentTimeMillis() - startTime));
             Set<Integer> indexToReplace = new HashSet<>();
             for (int i = 0; i < populationSize; i++) {
                 if (population[i].getFitness() >= minTruthValue) {
@@ -207,7 +214,7 @@ public class DiscoveryAlgorithm extends Algorithm {
             long currentIteration = 1;
             Iterator<Integer> replaceIterator;
             while (discoveryPredicates.size() < maximumNumberResult && elapsedTime < maximumTime && run) {
-                log.error("Current iteration {}, results {},  time {} ms, to replace {}", currentIteration,
+                log.debug("Current iteration {}, results {},  time {} ms, to replace {}", currentIteration,
                         discoveryPredicates.size(), elapsedTime, indexToReplace.size());
                 if (!indexToReplace.isEmpty()) {
                     Operator[] nOperators = new Operator[indexToReplace.size()];
@@ -280,7 +287,7 @@ public class DiscoveryAlgorithm extends Algorithm {
                 if (expressionMap.size() < ((2 * populationSize) / 5) && indexToReplace.size() < (populationSize / 2)) {
                     int cnt = 0;
                     int intents = 0;
-                    while (cnt < (3 * populationSize) / 5 && intents < 2 * populationSize) {
+                    while (cnt < (3 * populationSize) / 5 && intents < populationSize) {
                         if (indexToReplace.add(random.nextInt(populationSize))) {
                             cnt++;
                         }
@@ -346,8 +353,8 @@ public class DiscoveryAlgorithm extends Algorithm {
                         nVal = bEdit.get(random.nextInt(bEdit.size())).copy();
                         tmp = OperatorUtil.replace(c, aux, nVal);
                         intents++;
-                    } while (!OperatorUtil.isValid(tmp) && intents < bEdit.size() * 2);
-                    if (intents > bEdit.size() * 2) {
+                    } while (!OperatorUtil.isValid(tmp) && intents < bEdit.size());
+                    if (intents > bEdit.size()) {
                         return createRandomIndividual(generators, random.nextDouble() <= this.crossoverRate);
                     }
                 }
