@@ -8,10 +8,10 @@ public class Utils {
     /**
      * Generate a random number between lower and upper
      * 
-     * @param random
-     * @param lower
-     * @param upper
-     * @return
+     * @param random number generator
+     * @param lower limit
+     * @param upper limit
+     * @return random number
      */
     public static double randomNumber(Random random, double lower, double upper) {
         if (equals(lower, upper)) {
@@ -23,8 +23,8 @@ public class Utils {
     /**
      * Generate a random number [0,1]
      * 
-     * @param random
-     * @return
+     * @param random number generator
+     * @return number
      */
     public static double randomNumber(Random random) {
         return random.nextInt(1001) / 1001.0;
@@ -33,8 +33,8 @@ public class Utils {
     /**
      * Equals with delta tolerance
      * 
-     * @param a
-     * @param b
+     * @param a value
+     * @param b value
      * @return true if are equals, otherwise, false
      */
     public static boolean equals(double a, double b) {

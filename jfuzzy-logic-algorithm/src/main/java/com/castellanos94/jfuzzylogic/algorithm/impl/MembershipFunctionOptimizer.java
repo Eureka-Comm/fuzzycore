@@ -142,7 +142,7 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
                 offspring.add(c);
             }
             // Replace population
-            Collections.sort(offspring, Collections.reverseOrder());
+            offspring.sort(Collections.reverseOrder());
             Iterator<MembershipFunctionChromosome> iterator = offspring.iterator();
             while (iterator.hasNext()) {
                 MembershipFunctionChromosome tmp = iterator.next();
@@ -217,7 +217,7 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
     }
 
     @Override
-    protected Map<String, MembershipFunction[]> generateBoundaries(List<State> states) {
+    public Map<String, MembershipFunction[]> generateBoundaries(List<State> states) {
         Map<String, MembershipFunction[]> boundaries = new HashMap<>();
         for (State state : states) {
             Class<?> clazz = this.stateIdByClass.get(state.getUuid());
@@ -246,10 +246,10 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
     public MembershipFunctionOptimizer copy() {
         MembershipFunctionOptimizer cpy = new MembershipFunctionOptimizer(logic, table, maxIterations, populationSize,
                 minTruthValue, crossoverRate, mutationRate);
-        getGeneratorOperator().forEach((k, v) -> cpy.register(k, v));
-        getCrossoverOperator().forEach((k, v) -> cpy.register(k, v));
-        getMutationOperator().forEach((k, v) -> cpy.register(k, v));
-        getRepairOperators().forEach((k, v) -> cpy.register(k, v));
+        getGeneratorOperator().forEach(cpy::register);
+        getCrossoverOperator().forEach(cpy::register);
+        getMutationOperator().forEach(cpy::register);
+        getRepairOperators().forEach(cpy::register);
         return cpy;
     }
 

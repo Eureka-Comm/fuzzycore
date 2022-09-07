@@ -1,22 +1,22 @@
 package com.castellanos94.jfuzzylogic.algorithm;
 
 /**
- * Simple class for definy probability value
+ * Simple class for define probability value
  * 
  * @version 0.1.0
  */
 public abstract class AProbabilityOperator {
-    protected double probabilty;
+    protected double probability;
 
-    public AProbabilityOperator(double probabilty) {
-        this.probabilty = probabilty;
+    public AProbabilityOperator(double probability) {
+        this.probability = probability;
     }
 
-    public double getProbabilty() {
-        return probabilty;
+    public double getProbability() {
+        return probability;
     }
 
-    public void setProbabilty(double probabilty) {
-        this.probabilty = probabilty;
+    public void setProbability(double probability) {
+        this.probability = probability;
     }
 }

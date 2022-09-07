@@ -16,7 +16,7 @@ public interface IMembershipFunctionGenerator<T extends MembershipFunction> {
      * @param referenceValues ref values {e.g. min, avg, max}
      * @return [lower, upper] boundaries function
      */
-    public T[] generateBoundaries(MembershipFunction function, Double... referenceValues);
+    T[] generateBoundaries(MembershipFunction function, Double... referenceValues);
 
     /**
      * Generates a new membership function using the reference boundaries
@@ -25,5 +25,5 @@ public interface IMembershipFunctionGenerator<T extends MembershipFunction> {
      * @param upper function
      * @return new function
      */
-    public T generate(MembershipFunction lower, MembershipFunction upper);
+    T generate(MembershipFunction lower, MembershipFunction upper);
 }

@@ -15,18 +15,18 @@ import com.castellanos94.jfuzzylogic.core.membershipfunction.impl.FPG;
  * @see AProbabilityOperator
  */
 public class FPGCrossover extends AProbabilityOperator implements IMembershipFunctionCrossover<FPG> {
-    private Random random;
+    private final Random random;
 
     public FPGCrossover() {
         this(0.95);
     }
 
-    public FPGCrossover(double probabilty) {
-        this(probabilty, new Random());
+    public FPGCrossover(double probability) {
+        this(probability, new Random());
     }
 
-    public FPGCrossover(double probabilty, Random random) {
-        super(probabilty);
+    public FPGCrossover(double probability, Random random) {
+        super(probability);
         this.random = random;
     }
 
@@ -36,9 +36,9 @@ public class FPGCrossover extends AProbabilityOperator implements IMembershipFun
         FPG c = (FPG) a;
         FPG d = (FPG) b;
 
-        fpg.setBeta(random.nextDouble() <= probabilty ? c.getBeta() : d.getBeta());
-        fpg.setGamma(random.nextDouble() <= probabilty ? c.getGamma() : d.getGamma());
-        fpg.setM(random.nextDouble() <= probabilty ? c.getM() : d.getM());
+        fpg.setBeta(random.nextDouble() <= probability ? c.getBeta() : d.getBeta());
+        fpg.setGamma(random.nextDouble() <= probability ? c.getGamma() : d.getGamma());
+        fpg.setM(random.nextDouble() <= probability ? c.getM() : d.getM());
         fpg.setEditable(true);
         double tmp;
         if (fpg.getBeta().compareTo(fpg.getGamma()) > 0) {

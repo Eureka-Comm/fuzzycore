@@ -1,14 +1,13 @@
 package com.castellanos94.jfuzzylogic.algorithm;
 
+import com.castellanos94.jfuzzylogic.core.base.Operator;
+import com.castellanos94.jfuzzylogic.core.base.impl.State;
+import com.castellanos94.jfuzzylogic.core.membershipfunction.MembershipFunction;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
-import com.castellanos94.jfuzzylogic.algorithm.impl.EvaluationAlgorithm;
-import com.castellanos94.jfuzzylogic.core.base.Operator;
-import com.castellanos94.jfuzzylogic.core.base.impl.State;
-import com.castellanos94.jfuzzylogic.core.membershipfunction.MembershipFunction;
 
 /**
  * Definition of Membership Function Optimizer
@@ -25,7 +24,7 @@ public abstract class AMembershipFunctionOptimizer {
      */
     protected long endTime;
     /**
-     * PsuedoRandom generator
+     * PseudoRandom generator
      */
     protected Random random;
     /**
@@ -33,7 +32,7 @@ public abstract class AMembershipFunctionOptimizer {
      */
     protected Map<String, Class<? extends MembershipFunction>> stateIdByClass;
     /**
-     * Map with boundaris, expected [lower, upper] functions
+     * Map with boundaries, expected [lower, upper] functions
      */
     protected Map<String, MembershipFunction[]> boundaries;
     /**
@@ -52,16 +51,12 @@ public abstract class AMembershipFunctionOptimizer {
      * Mutation operators by class
      */
     protected Map<Class<? extends MembershipFunction>, IMembershipFunctionMutation<? extends MembershipFunction>> mutationOperator;
-    /**
-     * Evaluator object for sequential process
-     */
-    protected EvaluationAlgorithm evaluator;
 
     /**
      * Default constructor
      * <b>It is required to initialize stateIdByClass</b>
      * 
-     * @param random
+     * @param random number
      */
     public AMembershipFunctionOptimizer(Random random) {
         this.random = random;
@@ -83,7 +78,6 @@ public abstract class AMembershipFunctionOptimizer {
      * Mutation operator, delete to IMembershipFunctionMutation register
      * 
      * @param chromosome individual
-     * @param states     to work
      */
     protected void mutation(MembershipFunctionChromosome chromosome) {
         for (int i = 0; i < chromosome.getSize(); i++) {
@@ -173,10 +167,10 @@ public abstract class AMembershipFunctionOptimizer {
     protected Map<String, Class<? extends MembershipFunction>> identifyClass(List<State> states,
             Class<? extends MembershipFunction> defaultClass) {
         Map<String, Class<? extends MembershipFunction>> map = new HashMap<>();
-        for (int i = 0; i < states.size(); i++) {
-            Class<? extends MembershipFunction> clazz = states.get(i).getMembershipFunction() == null ? defaultClass
-                    : states.get(i).getMembershipFunction().getClass();
-            map.put(states.get(i).getUuid(), clazz);
+        for (State state : states) {
+            Class<? extends MembershipFunction> clazz = state.getMembershipFunction() == null ? defaultClass
+                    : state.getMembershipFunction().getClass();
+            map.put(state.getUuid(), clazz);
         }
         return map;
     }
@@ -186,7 +180,7 @@ public abstract class AMembershipFunctionOptimizer {
      * and substituting the required functions.
      * 
      * @param states   to work
-     * @param solution to evaluete
+     * @param solution to evaluate
      */
     protected abstract void evaluate(List<State> states, MembershipFunctionChromosome solution);
 
@@ -194,9 +188,9 @@ public abstract class AMembershipFunctionOptimizer {
      * Generate boundaries by reference data
      * 
      * @param states to work
-     * @see IMembershipFunctionGenerator#generateBoundaries(Double...)
+     * @apiNote {@link IMembershipFunctionGenerator#generateBoundaries(MembershipFunction, Double...)}
      */
-    protected abstract Map<String, MembershipFunction[]>  generateBoundaries(List<State> states);
+    public abstract Map<String, MembershipFunction[]>  generateBoundaries(List<State> states);
 
     /**
      * Generate a new solution: this method delegates the creation of alleles to the
@@ -213,7 +207,7 @@ public abstract class AMembershipFunctionOptimizer {
      * 
      * @param clazz          to apply operator
      * @param repairFunction operator
-     * @return
+     * @return registered
      */
     public IMembershipFunctionRepair<? extends MembershipFunction> register(Class<? extends MembershipFunction> clazz,
             IMembershipFunctionRepair<? extends MembershipFunction> repairFunction) {
@@ -225,7 +219,7 @@ public abstract class AMembershipFunctionOptimizer {
      * 
      * @param clazz             to apply operator
      * @param generatorFunction operator
-     * @return
+     * @return registered
      */
     public IMembershipFunctionGenerator<? extends MembershipFunction> register(
             Class<? extends MembershipFunction> clazz,
@@ -237,8 +231,8 @@ public abstract class AMembershipFunctionOptimizer {
      * Register new generator operator
      * 
      * @param clazz             to apply operator
-     * @param generatorFunction operator
-     * @return
+     * @param crossoverFunction operator
+     * @return register
      */
     public IMembershipFunctionCrossover<? extends MembershipFunction> register(
             Class<? extends MembershipFunction> clazz,
@@ -250,8 +244,8 @@ public abstract class AMembershipFunctionOptimizer {
      * Register new generator operator
      * 
      * @param clazz             to apply operator
-     * @param generatorFunction operator
-     * @return
+     * @param mutationFunction operator
+     * @return registered
      */
     public IMembershipFunctionMutation<? extends MembershipFunction> register(
             Class<? extends MembershipFunction> clazz,

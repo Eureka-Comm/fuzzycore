@@ -1,25 +1,19 @@
 package com.castellanos94.jfuzzylogic.algorithm.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import com.castellanos94.jfuzzylogic.algorithm.JFuzzyLogicAlgorithmError;
 import com.castellanos94.jfuzzylogic.core.OperatorUtil;
 import com.castellanos94.jfuzzylogic.core.base.AElement;
 import com.castellanos94.jfuzzylogic.core.base.JFuzzyLogicError;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
 import com.castellanos94.jfuzzylogic.core.base.OperatorType;
-import com.castellanos94.jfuzzylogic.core.base.impl.And;
-import com.castellanos94.jfuzzylogic.core.base.impl.Eqv;
-import com.castellanos94.jfuzzylogic.core.base.impl.Generator;
-import com.castellanos94.jfuzzylogic.core.base.impl.Imp;
-import com.castellanos94.jfuzzylogic.core.base.impl.Not;
-import com.castellanos94.jfuzzylogic.core.base.impl.Or;
-import com.castellanos94.jfuzzylogic.core.base.impl.State;
+import com.castellanos94.jfuzzylogic.core.base.impl.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
- * Default predicate generator from Geneators
+ * Default predicate generator from Generators
  * 
  * @see Generator
  * @version 0.1.0
@@ -27,12 +21,12 @@ import com.castellanos94.jfuzzylogic.core.base.impl.State;
 public class PredicateGenerator {
 
     /**
-     * Generate a new operattor from generator.
+     * Generate a new operator from generator.
      * 
      * @param random    generator number
      * @param predicate guide, can be null
      * @param generator generator
-     * @param balanced
+     * @param balanced full or growth
      * @return if predicate is null, can be return a state, otherwise, operator
      */
     public static AElement generate(Random random, Operator predicate, Generator generator, boolean balanced) {
@@ -45,7 +39,7 @@ public class PredicateGenerator {
         }
         List<Generator> generators = generator.getGenerators();
         OperatorType[] operatorTypes = generator.getOperators()
-                .toArray(new OperatorType[generator.getOperators().size()]);
+                .toArray(new OperatorType[0]);
         return generateChild(random, predicate, generator, states, generators, operatorTypes, balanced);
     }
 
@@ -55,25 +49,25 @@ public class PredicateGenerator {
         Operator current;
 
         if (predicate != null && !balanced && random.nextDouble() < 0.65) {
-            List<State> sibilings = OperatorUtil.getNodesByClass(predicate, State.class);
+            List<State> siblings = OperatorUtil.getNodesByClass(predicate, State.class);
             State state;
-            List<State> avalaible = new ArrayList<>();
-            if (sibilings.isEmpty()) {
-                avalaible = states;
+            List<State> available = new ArrayList<>();
+            if (siblings.isEmpty()) {
+                available = states;
             } else {
                 for (State s : states) {
-                    if (!sibilings.contains(s)) {
-                        avalaible.add(s);
+                    if (!siblings.contains(s)) {
+                        available.add(s);
                     }
                 }
             }
-            if (!avalaible.isEmpty()) {
-                state = avalaible.get(random.nextInt(avalaible.size())).copy();
+            if (!available.isEmpty()) {
+                state = available.get(random.nextInt(available.size())).copy();
                 state.setFrom(generator.getUuid());
                 state.setEditable(true);
                 return state;
             } else {
-                if (sibilings.size() < 2) {
+                if (siblings.size() < 2) {
                     Not nt = new Not();
                     nt.setEditable(true);
                     nt.setFrom(generator.getFrom());
@@ -93,12 +87,12 @@ public class PredicateGenerator {
         List<Operator> pending = new ArrayList<>();
         pending.add(root);
         int currentLevel = 0;
-        ArrayList<AElement> chidren;
+        ArrayList<AElement> children;
         int index = 0;
         while (index < pending.size()) {
             current = pending.get(index++);
-            chidren = OperatorUtil.getNodesByClass(current, AElement.class);
-            if (!chidren.contains(current)) {
+            children = OperatorUtil.getNodesByClass(current, AElement.class);
+            if (!children.contains(current)) {
                 currentLevel++;
             }
             if (current instanceof And || current instanceof Or) {
@@ -110,32 +104,28 @@ public class PredicateGenerator {
             } else {
                 throw new JFuzzyLogicAlgorithmError("Not supported generation for " + root.getClass());
             }
-            // System.out.println(String.format("Current %s, Size %d",
-            // current.getClass().getSimpleName(), size));
             for (int i = 0; i < size; i++) {
                 if (currentLevel >= generator.getDepth() || (!balanced && random.nextDouble() < 0.45)) {
                     State state;
-                    List<State> sibilings = OperatorUtil.getNodesByClass(current, State.class);
-                    List<State> avalaible = new ArrayList<>();
-                    if (sibilings.isEmpty()) {
-                        avalaible = states;
+                    List<State> siblings = OperatorUtil.getNodesByClass(current, State.class);
+                    List<State> available = new ArrayList<>();
+                    if (siblings.isEmpty()) {
+                        available = states;
                     } else {
                         for (State s : states) {
-                            if (!sibilings.contains(s)) {
-                                avalaible.add(s);
+                            if (!siblings.contains(s)) {
+                                available.add(s);
                             }
                         }
                     }
-                    // System.out.println(String.format("\t\tRoot %s, avalaible %d, %s", current,
-                    // avalaible.size(), avalaible));
-                    if (!avalaible.isEmpty()) {
-                        state = avalaible.get(random.nextInt(avalaible.size())).copy();
+                    if (!available.isEmpty()) {
+                        state = available.get(random.nextInt(available.size())).copy();
                         state.setFrom(generator.getUuid());
                         state.setEditable(true);
                         // System.out.println(String.format("\t\t\tTo add %s", state));
                         current.add(state);
                     } else {
-                        if (sibilings.size() < 2) {
+                        if (siblings.size() < 2) {
                             Not nt = new Not();
                             nt.setEditable(true);
                             nt.setFrom(generator.getFrom());
@@ -152,7 +142,7 @@ public class PredicateGenerator {
                         tmp = OperatorUtil.getInstance(operatorTypes[random.nextInt(operatorTypes.length)]);
                         tmp.setEditable(true);
                         tmp.setFrom(generator.getUuid());
-                        current.add(tmp);// checar si es falso agregar otro
+                        current.add(tmp);
                         pending.add(tmp);
                     } else {
                         tmp = (Operator) generate(random, predicate, generators.get(random.nextInt(generators.size())),
@@ -161,9 +151,7 @@ public class PredicateGenerator {
                         tmp.setFrom(generator.getUuid());
                         current.add(tmp);
                     }
-                    // System.out.println(String.format("\t\t\tTo add %s", tmp));
                 }
-                // System.out.println(String.format("\t%3d - Current %s", i, current));
             }
         }
 

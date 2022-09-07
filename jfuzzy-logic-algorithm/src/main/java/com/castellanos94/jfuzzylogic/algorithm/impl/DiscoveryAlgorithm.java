@@ -175,12 +175,10 @@ public class DiscoveryAlgorithm extends Algorithm {
             for (int i = 0; i < populationSize; i++) {
                 population[i] = createRandomIndividual(generators, i < populationSize / 2);
             }
-            // Evaluate initial populaiton
-            Arrays.parallelSetAll(population, idx -> {
-                return optimizer.copy().execute(population[idx]).copy();
-            });
+            // Evaluate initial population
+            Arrays.parallelSetAll(population, idx -> optimizer.copy().execute(population[idx]).copy());
             Arrays.sort(population, Collections.reverseOrder());
-            log.info("End time for evalution of random population: {} ms", (System.currentTimeMillis() - startTime));
+            log.info("End time for evaluation of random population: {} ms", (System.currentTimeMillis() - startTime));
             Set<Integer> indexToReplace = new HashSet<>();
             for (int i = 0; i < populationSize; i++) {
                 if (population[i].getFitness() >= minTruthValue) {
@@ -213,16 +211,13 @@ public class DiscoveryAlgorithm extends Algorithm {
                         discoveryPredicates.size(), elapsedTime, indexToReplace.size());
                 if (!indexToReplace.isEmpty()) {
                     Operator[] nOperators = new Operator[indexToReplace.size()];
-                    replaceIterator = indexToReplace.iterator();
                     for (int idx = 0; idx < nOperators.length; idx++) {
                         nOperators[idx] = createRandomIndividual(generators, random.nextDouble() < 0.5);
                     }
-                    Arrays.parallelSetAll(nOperators, idx -> {
-                        return optimizer.copy().execute(nOperators[idx]).copy();
-                    });
+                    Arrays.parallelSetAll(nOperators, idx -> optimizer.copy().execute(nOperators[idx]).copy());
                     replaceIterator = indexToReplace.iterator();
-                    for (int idx = 0; idx < nOperators.length; idx++) {
-                        population[replaceIterator.next()] = nOperators[idx];
+                    for (Operator nOperator : nOperators) {
+                        population[replaceIterator.next()] = nOperator;
                     }
                     indexToReplace.clear();
                 }
@@ -241,9 +236,7 @@ public class DiscoveryAlgorithm extends Algorithm {
                     offspring[i] = c;
                 }
                 // evaluate offspring
-                Arrays.parallelSetAll(offspring, _idx -> {
-                    return optimizer.copy().execute(offspring[_idx]).copy();
-                });
+                Arrays.parallelSetAll(offspring, _idx -> optimizer.copy().execute(offspring[_idx]).copy());
                 // Replace population
                 for (int i = 0; i < offspringSize; i++) {
                     a = offspring[i];
@@ -277,8 +270,6 @@ public class DiscoveryAlgorithm extends Algorithm {
                     }
                 }
                 // We check if there is no stagnation in the search
-                // log.error("Diversity {}, maximum tolerance for repeated predicates {}",
-                // expressionMap.size(),maximumToleranceForRepeated);
                 expressionMap.forEach((k, v) -> {
                     if (v.size() >= maximumToleranceForRepeated) {
                         if (v.size() > maximumToleranceForRepeated) {
@@ -310,7 +301,7 @@ public class DiscoveryAlgorithm extends Algorithm {
                 }
             }
         }
-        Collections.sort(discoveryPredicates, Collections.reverseOrder());
+        discoveryPredicates.sort(Collections.reverseOrder());
         this.endTime = System.currentTimeMillis();
         log.error("Discovery Results {}, elapsed time {} ms", this.discoveryPredicates.size(), this.getComputeTime());
     }
@@ -415,7 +406,6 @@ public class DiscoveryAlgorithm extends Algorithm {
             if (p != null) {
                 p = OperatorUtil.replace(p, g, element);
             } else {
-                log.error("Predicate {}", p);
                 log.error("Child {} from {}", element, g);
                 throw new JFuzzyLogicAlgorithmError(
                         "Illegal assignment at createRandomIndividual with multiple generators");
