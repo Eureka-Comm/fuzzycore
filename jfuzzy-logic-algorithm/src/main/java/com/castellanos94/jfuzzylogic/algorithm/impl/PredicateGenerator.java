@@ -25,33 +25,6 @@ import com.castellanos94.jfuzzylogic.core.base.impl.State;
  * @version 0.1.0
  */
 public class PredicateGenerator {
-    public static void main(String[] args) {
-        State b = new State("d");
-        State a = (State) new State("d").setEditable(true);
-        System.out.println(a.hashCode());
-        System.out.println(b.hashCode());
-        System.out.println(a.equals(b));
-        Generator generator = new Generator();
-        generator.setLabel("mi generador");
-        generator.setDepth(2);
-        generator.add(new State("a"), new State("b"), new State("c"));
-        generator.add(new State("d"), new State("d"));
-        generator.add(OperatorType.IMP, OperatorType.EQV, OperatorType.AND);
-        Generator orNot = new Generator();
-        orNot.setLabel("disyuntivo");
-        orNot.setDepth(2);
-        orNot.add(new State("e"), new State("f"), new State("g"));
-        orNot.add(OperatorType.OR, OperatorType.NOT);
-        generator.add(orNot);
-        Random random = new Random(1l);
-        random.setSeed(1l);
-
-        int size = 1;
-        for (int i = 0; i < size; i++) {
-            System.out.println(String.format("%d - %s", (i + 1), generate(random, null, generator, i < size / 2)));
-        }
-
-    }
 
     /**
      * Generate a new operattor from generator.
