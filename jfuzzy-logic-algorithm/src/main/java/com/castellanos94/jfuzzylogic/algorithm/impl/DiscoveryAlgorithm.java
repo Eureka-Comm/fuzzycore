@@ -157,10 +157,7 @@ public class DiscoveryAlgorithm extends Algorithm {
         this.optimizer = new MembershipFunctionOptimizer(logic, table, adjMaxIteration, adjPopulationSize,
                 adjMinTruthValue, adjCrossoverRate, adjMutationRate);
         this.random = new Random();
-        this.maximumToleranceForRepeated = populationSize / 20;
-        if (maximumToleranceForRepeated < 2) {
-            this.maximumNumberResult = 2;
-        }
+        this.maximumToleranceForRepeated = 3;
     }
 
     @Override
@@ -169,7 +166,9 @@ public class DiscoveryAlgorithm extends Algorithm {
         this.discoveryPredicates = new ArrayList<>();
         ArrayList<Generator> generators = OperatorUtil.getNodesByClass(predicate, Generator.class);
         if (generators.isEmpty()) {
-            this.discoveryPredicates.add(optimizer.execute(predicate).copy());
+            for (int i = 0; i < this.maximumNumberResult; i++) {
+                this.discoveryPredicates.add(optimizer.execute(predicate).copy());   
+            }            
         } else {
             Operator[] population = new Operator[populationSize];
             // Generate random population
@@ -339,9 +338,6 @@ public class DiscoveryAlgorithm extends Algorithm {
         }
         Operator c = a.copy();// OperatorUtil.getInstance(OperatorUtil.getType(a));
 
-        if (!OperatorUtil.isValid(c)) {
-            log.error("Copy Invalid predicate {}", c);
-        }
         List<AElement> successors = OperatorUtil.getSuccessors(c);
         int minSize = successors.size();/*
                                          * (int) (successors.size() > 2 ? Utils.randomNumber(random, 2.0, (double)
@@ -369,9 +365,6 @@ public class DiscoveryAlgorithm extends Algorithm {
             currentSize++;
         }
 
-        if (!OperatorUtil.isValid(c)) {
-            log.error("Invalid predicate {}", c);
-        }
         return c;
     }
 
