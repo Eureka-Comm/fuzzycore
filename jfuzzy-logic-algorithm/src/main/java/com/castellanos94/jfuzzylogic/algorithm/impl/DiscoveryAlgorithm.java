@@ -280,8 +280,7 @@ public class DiscoveryAlgorithm extends Algorithm {
                 // log.error("Diversity {}, maximum tolerance for repeated predicates {}",
                 // expressionMap.size(),maximumToleranceForRepeated);
                 expressionMap.forEach((k, v) -> {
-                    if (v.size() > maximumToleranceForRepeated) {
-                        // log.error("\t {} - {}", v.size(), k);
+                    if (v.size() >= maximumToleranceForRepeated) {
                         if (v.size() > maximumToleranceForRepeated) {
                             indexToReplace.addAll(v.subList(0, v.size() - 1));
                         }

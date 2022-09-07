@@ -65,7 +65,9 @@ public class App {
                 log.error("End time {}", new Date(result.getEndTime()));
                 log.error("Fitness - Discovery Predicate");
                 for (Operator p : result.getData()) {
-                        log.error("Valid? {} :{} - {} - {} ", OperatorUtil.isValid(p, true),p.getFitness(), p.toString(), OperatorUtil.getSuccessors(p).stream().filter(e -> e.equals(q)).map(e-> (State)q).findFirst().get().getMembershipFunction());
+                        if (!OperatorUtil.isValid(p, true)) {
+                                log.error("Invalid error from discovery {}", p);
+                        }
                 }
         }
 }
