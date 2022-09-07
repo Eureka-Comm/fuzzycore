@@ -18,8 +18,7 @@ public class Eqv extends Operator {
     @Override
     public boolean add(AElement e) {
         if (this.children.size() < 2){
-            Boolean flag = _add(e);
-            return flag;
+            return _add(e);
         }
         throw new JFuzzyLogicError("maximum arity reached for " + getClass().getSimpleName());
     }

@@ -52,7 +52,7 @@ public abstract class Operator extends AElement implements Comparable<Operator>,
             if (c instanceof Generator) {
                 buffer.append(String.format(" \"%s\"", c.getLabel()));
             } else if (c instanceof Operator) {
-                buffer.append(" ").append(c.toString());
+                buffer.append(" ").append(c);
             } else {
                 buffer.append(String.format(" \"%s\"", c.getLabel()));
             }

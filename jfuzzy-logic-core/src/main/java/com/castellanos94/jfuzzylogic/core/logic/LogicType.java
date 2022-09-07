@@ -14,5 +14,5 @@ public enum LogicType {
     @JsonProperty("zadeh")
     ZADEH,
     @JsonProperty("gmbcv")
-    GMBCV;
+    GMBCV
 }

@@ -26,7 +26,7 @@ import lombok.ToString;
  * 
  * @version 1.0.0
  */
-@JsonTypeInfo(include = As.PROPERTY, use = Id.NAME)
+@JsonTypeInfo(use = Id.NAME)
 @JsonSubTypes(value = {
         @Type(value = State.class, names = { "state", "STATE", "linguisticState" }),
         @Type(value = And.class, names = { "and", "AND" }),

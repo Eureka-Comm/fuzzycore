@@ -19,7 +19,7 @@ import lombok.ToString;
  * 
  * @version 1.0
  */
-@JsonTypeInfo(include = As.PROPERTY, use = Id.NAME)
+@JsonTypeInfo(use = Id.NAME)
 @JsonSubTypes(value = {
         @Type(value = FPG.class, names = { "fpg", "FPG" })
 })
@@ -45,7 +45,7 @@ public abstract class MembershipFunction {
     public abstract MembershipFunction copy();
 
     /**
-     * method for assigning properties to an sorted array
+     * method for assigning properties to a sorted array
      * 
      * @return array values
      */

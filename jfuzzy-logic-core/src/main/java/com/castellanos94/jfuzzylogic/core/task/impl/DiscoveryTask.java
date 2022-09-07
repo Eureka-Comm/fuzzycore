@@ -23,7 +23,7 @@ public class DiscoveryTask extends Task {
     @EqualsAndHashCode.Include
     protected Integer adjPopulationSize;
     @EqualsAndHashCode.Include
-    protected Integer adjMaxIter;
+    protected Integer adjMaxIterations;
     @EqualsAndHashCode.Include
     protected Double adjMinTruthValue;    
 }

@@ -1,7 +1,7 @@
 package com.castellanos94.jfuzzylogic.core.base;
 
 /**
- * Operator type for classifier a element
+ * Operator type for classifier an element
  * 
  * @version 1.0.0
  */
@@ -10,5 +10,5 @@ public enum OperatorType {
     OR,
     IMP,
     EQV,
-    NOT;
+    NOT
 }

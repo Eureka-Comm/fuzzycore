@@ -28,8 +28,7 @@ public class OperatorUtil {
     /**
      * Obtains the maximum level of the element
      * 
-     * @param root
-     * @return
+     * @return level
      */
     public static int getMaximumLeafLevel(AElement element) {
         if (element instanceof State || element instanceof Generator) {
@@ -40,7 +39,7 @@ public class OperatorUtil {
         if (!operators.isEmpty()) {
             int max = 0;
             for (Operator e : operators) {
-                int lvl = getMaximumLeafLevel((Operator) e) + 1;
+                int lvl = getMaximumLeafLevel(e) + 1;
                 max = Math.max(max, lvl);
             }
             return max;
@@ -49,11 +48,11 @@ public class OperatorUtil {
     }
 
     /**
-     * Valide predicate/state
+     * Valid predicate/state
      * 
      * @param element           to evaluate
      * @param includeMembership if its true performance membership validation
-     * @return
+     * @return validation
      */
     public static boolean isValid(AElement element, boolean... includeMembership) {
         if (element == null) {
@@ -75,7 +74,7 @@ public class OperatorUtil {
             if (!generators.isEmpty()) {
                 for (int i = 0; i < generators.size() && flag; i++) {
                     flag = flag
-                            && isValid(generators.get(i), includeMembership.length > 0 ? includeMembership[0] : false);
+                            && isValid(generators.get(i), includeMembership.length > 0 && includeMembership[0]);
                 }
             }
         } else {
@@ -86,7 +85,7 @@ public class OperatorUtil {
             Operator operator = (Operator) element;
             int count = 0;
             for (AElement ae : operator) {
-                boolean av = isValid(ae, includeMembership.length > 0 ? includeMembership[0] : false);
+                boolean av = isValid(ae, includeMembership.length > 0 && includeMembership[0]);
                 if (!av) {
                     return false;
                 }
@@ -164,11 +163,11 @@ public class OperatorUtil {
     }
 
     /**
-     * Get nivel in the tree by Depth-first search
+     * Get level in the tree by Depth-first search
      * 
-     * @param root
-     * @param node
-     * @return
+     * @param root parent
+     * @param node child
+     * @return count
      */
     public static int dfs(Operator root, AElement node) {
         return dfs(root, node, 1);
@@ -177,10 +176,10 @@ public class OperatorUtil {
     /**
      * Aux function for DFS
      * 
-     * @param root
-     * @param node
-     * @param pos
-     * @return
+     * @param root parent
+     * @param node child
+     * @param pos position
+     * @return count
      */
     private static int dfs(Operator root, AElement node, int pos) {
         if (node.equals(root)) {
@@ -207,7 +206,7 @@ public class OperatorUtil {
      */
     public static List<AElement> getEditableNode(Operator operator) {
         ArrayList<AElement> all = getNodesByClass(operator, AElement.class);
-        return all.stream().filter(element -> element.isEditable()).collect(Collectors.toList());
+        return all.stream().filter(AElement::isEditable).collect(Collectors.toList());
     }
 
     /**

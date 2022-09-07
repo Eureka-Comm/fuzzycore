@@ -6,7 +6,7 @@ import com.castellanos94.jfuzzylogic.core.logic.impl.LogicBuilder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
- * Abstract class representing an logic
+ * Abstract class representing a logic
  * 
  * @version 1.0.0
  * @see ImplicationType

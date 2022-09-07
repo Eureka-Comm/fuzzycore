@@ -70,7 +70,7 @@ public class GMBC extends Logic {
     public double exist(Collection<Double> values) {
         double result = 0.0;
         result = values.stream().filter((value) -> (value != 0)).map((value) -> (Math.log(1 - value))).reduce(result,
-                (accumulator, _item) -> accumulator + _item);
+                Double::sum);
         return (1 - Math.pow(Math.E, ((1.0 / values.size()) * result)));
     }
 }

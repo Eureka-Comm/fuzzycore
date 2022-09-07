@@ -6,8 +6,8 @@ import com.castellanos94.jfuzzylogic.core.logic.ImplicationType;
 import com.castellanos94.jfuzzylogic.core.logic.Logic;
 
 /**
- * AMBC logic: https://doi.org/10.1142/S1469026811003070 -based implementation.
- * 
+ * AMBC logic: <a href="https://doi.org/10.1142/S1469026811003070">article</a> -based implementation.
+ *
  * @author Castellanos-Alvarez, Alejandro.
  * @version 1.0
  */

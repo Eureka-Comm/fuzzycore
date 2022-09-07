@@ -39,7 +39,7 @@ public class TaskTest {
     public void simpleTask() throws JsonProcessingException {
         EvaluationTask evaluationTask = new EvaluationTask();
         evaluationTask.setDataset("tinto.csv")
-                .setDescripton("simple evaluation task")
+                .setDescription("simple evaluation task")
                 .setName("Evaluation test")
                 .setPredicate(getPredicate())
                 .setLogicBuilder(LogicBuilder.newBuilder(LogicType.GMBC))
@@ -62,7 +62,7 @@ public class TaskTest {
         generator.add(OperatorType.AND, OperatorType.IMP,OperatorType.EQV);
         DiscoveryTask discoveryTask = new DiscoveryTask();
         discoveryTask.setDataset("tinto.csv")
-                .setDescripton("simple discovery task")
+                .setDescription("simple discovery task")
                 .setName("Discovery test")
                 .setPredicate(getPredicate())
                 .setLogicBuilder(LogicBuilder.newBuilder(LogicType.GMBC))
@@ -71,7 +71,7 @@ public class TaskTest {
                 .setMinTruthValue(0.95)
                 .setMutationRate(0.05)
                 .setPopulationSize(100)
-                .setAdjMaxIter(20)
+                .setAdjMaxIterations(20)
                 .setAdjMinTruthValue(0.3)
                 .setAdjPopulationSize(10)
                 .setNumResult(10)
