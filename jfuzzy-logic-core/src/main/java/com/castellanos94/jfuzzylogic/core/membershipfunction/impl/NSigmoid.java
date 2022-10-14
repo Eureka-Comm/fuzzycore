@@ -12,7 +12,9 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = false)
 @ToString(callSuper = true)
 public class NSigmoid extends MembershipFunction {
+    @EqualsAndHashCode.Include
     protected Double center;
+    @EqualsAndHashCode.Include
     protected Double beta;
 
     public NSigmoid() {
