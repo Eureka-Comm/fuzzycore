@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 import lombok.EqualsAndHashCode;
@@ -29,11 +28,11 @@ import lombok.ToString;
 @JsonTypeInfo(use = Id.NAME)
 @JsonSubTypes(value = {
         @Type(value = State.class, names = { "state", "STATE", "linguisticState" }),
-        @Type(value = And.class, names = { "and", "AND" }),
-        @Type(value = Or.class, names = { "or", "OR" }),
-        @Type(value = Imp.class, names = { "imp", "IMP" }),
-        @Type(value = Eqv.class, names = { "eqv", "EQV" }),
-        @Type(value = Not.class, names = { "not", "NOT" }),
+        @Type(value = And.class, names = { "and", "AND", "∧", "&" }),
+        @Type(value = Or.class, names = { "or", "OR", "v" }),
+        @Type(value = Imp.class, names = { "imp", "IMP", "→", "->", "=>" }),
+        @Type(value = Eqv.class, names = { "eqv", "EQV", "<->", "<=>" }),
+        @Type(value = Not.class, names = { "not", "NOT", "~", "!" }),
         @Type(value = Generator.class, names = { "generator", "Generator", "GENERATOR", "*", "comodin" })
 })
 @Getter
