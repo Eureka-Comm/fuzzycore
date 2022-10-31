@@ -90,6 +90,8 @@ public class EvaluationAlgorithm extends Algorithm {
         this.result.setExists(exists);
         predicate.setFitness(forAll);
         this.result.setPredicate(predicate);
+        data.put("result", result);
+        this.result.setData(data);
     }
 
     private Double fitValue(AElement node, int index) {
