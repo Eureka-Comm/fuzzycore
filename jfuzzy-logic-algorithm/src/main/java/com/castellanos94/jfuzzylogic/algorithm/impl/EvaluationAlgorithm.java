@@ -113,7 +113,7 @@ public class EvaluationAlgorithm extends Algorithm {
         } else if (node instanceof Eqv) {
             Eqv eqv = (Eqv) node;
             Iterator<AElement> iterator = eqv.iterator();
-            double rs ;
+            double rs;
             try {
                 rs = logic.eqv(fitValue(iterator.next(), index), fitValue(iterator.next(), index));
             } catch (NoSuchElementException ex) {
@@ -137,7 +137,7 @@ public class EvaluationAlgorithm extends Algorithm {
         this.data = new HashMap<>();
         ArrayList<State> states = OperatorUtil.getNodesByClass(predicate, State.class);
         for (State state : states) {
-            if (!table.containsColumn(state.getColName())) {
+            if (!table.columnNames().stream().filter(cn -> cn.equals(state.getColName())).findFirst().isPresent()) {
                 throw new JFuzzyLogicAlgorithmError(String.format("Column %s does not exist for the state %s",
                         state.getColName(), state));
             }
