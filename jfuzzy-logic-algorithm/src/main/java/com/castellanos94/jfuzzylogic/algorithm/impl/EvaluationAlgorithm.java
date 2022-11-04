@@ -92,7 +92,6 @@ public class EvaluationAlgorithm extends Algorithm {
                 rsPremise.add(fitValue(imp.getAntecedent(), i));
                 rsPredicate.add(fitValue(predicate, i));
             }
-
             double exits = logic.exist(rsPremise);
             List<Double> rs = new ArrayList<>();
             for (Double valDouble : rsPredicate) {
