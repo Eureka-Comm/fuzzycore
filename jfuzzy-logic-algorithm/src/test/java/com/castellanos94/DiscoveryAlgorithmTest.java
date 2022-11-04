@@ -8,6 +8,7 @@ import java.util.HashSet;
 import org.junit.Test;
 
 import com.castellanos94.jfuzzylogic.algorithm.impl.DiscoveryAlgorithm;
+import com.castellanos94.jfuzzylogic.algorithm.impl.EvaluationAlgorithm;
 import com.castellanos94.jfuzzylogic.core.OperatorUtil;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
 import com.castellanos94.jfuzzylogic.core.base.OperatorType;
@@ -40,7 +41,7 @@ public class DiscoveryAlgorithmTest {
                 Operator predicate = new Imp(generator,
                                 new State("high quality", "quality", new Sigmoid(5.5, 4.)));
                 System.out.println("Predicate guide " + predicate);
-                long maximumTime = 60 * 1000 * 5; // 5 min
+                long maximumTime = 60 * 1000 * 2; // 5 min
                 DiscoveryAlgorithm algorithm = new DiscoveryAlgorithm(predicate, maximumTime, logic, table, 0.95, 0.95,
                                 0.1, 100, 100, 0.1, 0.95, 0.2, 20, 20);
                 algorithm.execute();
@@ -53,7 +54,10 @@ public class DiscoveryAlgorithmTest {
                 assertEquals(true, result.getData().size() > 2);
                 int index = 0;
                 for (Operator op : result.getData()) {
-                        System.out.println((index++) + " " + op);
+                        System.out.print((index++) + " " + op+" "+op.getFitness());
+                        EvaluationAlgorithm evaluationAlgorithm = new EvaluationAlgorithm(op, logic, table);
+                        evaluationAlgorithm.execute();
+                        System.out.println(" -> "+op.getFitness());
                         assertEquals(true, OperatorUtil.isValid(op, true));
                         assertEquals(predicate.getClass(), op.getClass());
                 }

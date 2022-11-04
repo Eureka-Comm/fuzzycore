@@ -299,8 +299,8 @@ public class DiscoveryAlgorithm extends Algorithm {
                 elapsedTime = System.currentTimeMillis() - startTime;
                 currentIteration++;
             }
-            Arrays.sort(population, Collections.reverseOrder());
             if (this.discoveryPredicates.size() < 2) {
+                Arrays.sort(population, Collections.reverseOrder());
                 int size = Math.min(10 - this.discoveryPredicates.size(), populationSize);
                 log.error("Few results exist {}, copying the best ones {}", this.discoveryPredicates, size);
                 for (int i = 0; i < size; i++) {
