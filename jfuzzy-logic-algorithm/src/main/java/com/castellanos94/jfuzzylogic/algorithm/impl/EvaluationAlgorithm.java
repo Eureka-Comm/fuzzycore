@@ -83,7 +83,7 @@ public class EvaluationAlgorithm extends Algorithm {
         this.startTime = System.currentTimeMillis();
         this.result.setStartTime(startTime);
         fuzzyData();
-        if (this.predicate instanceof Imp) {
+        if (predicate instanceof Imp && !(predicate instanceof Eqv)) {
             Imp imp = (Imp) this.predicate;
             List<Double> rsPremise = new ArrayList<>();
             List<Double> rsPredicate = new ArrayList<>();

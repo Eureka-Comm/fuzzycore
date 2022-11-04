@@ -17,6 +17,7 @@ import com.castellanos94.jfuzzylogic.algorithm.AMembershipFunctionOptimizer;
 import com.castellanos94.jfuzzylogic.algorithm.MembershipFunctionChromosome;
 import com.castellanos94.jfuzzylogic.core.OperatorUtil;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
+import com.castellanos94.jfuzzylogic.core.base.impl.Eqv;
 import com.castellanos94.jfuzzylogic.core.base.impl.Imp;
 import com.castellanos94.jfuzzylogic.core.base.impl.State;
 import com.castellanos94.jfuzzylogic.core.logic.Logic;
@@ -164,8 +165,8 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
         for (State state : states) {
             state.setMembershipFunction(solution.getFunction(state.getUuid()));
         }
-        EvaluationAlgorithm evaluator =new EvaluationAlgorithm(predicate, logic, table);
-        if (predicate instanceof Imp) {
+        EvaluationAlgorithm evaluator = new EvaluationAlgorithm(predicate, logic, table);
+        if (predicate instanceof Imp && !(predicate instanceof Eqv)) {
             evaluator.evaluateImplication();
         } else {
             evaluator.execute();

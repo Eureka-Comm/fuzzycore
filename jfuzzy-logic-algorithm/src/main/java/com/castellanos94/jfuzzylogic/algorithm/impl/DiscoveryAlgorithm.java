@@ -308,11 +308,12 @@ public class DiscoveryAlgorithm extends Algorithm {
                 }
             }
         }
-        if (predicate instanceof Imp) {
+        if (predicate instanceof Imp && !(predicate instanceof Eqv)) {
+            log.error("Predicate guide {}", this.predicate);
             for (Operator currenOperator : discoveryPredicates) {
                 double old = currenOperator.getFitness();
                 new EvaluationAlgorithm(currenOperator, logic, table).execute();
-                log.error("Fitness only for internal use {} - real {}", old, currenOperator.getFitness());
+                log.error("\tFitness only for internal use {} - real {}", old, currenOperator.getFitness());
             }
         }
         discoveryPredicates.sort(Collections.reverseOrder());
