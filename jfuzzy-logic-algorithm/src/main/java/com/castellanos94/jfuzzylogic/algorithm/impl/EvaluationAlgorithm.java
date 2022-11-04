@@ -79,6 +79,34 @@ public class EvaluationAlgorithm extends Algorithm {
         this.result.setEndTime(endTime);
     }
 
+    public void evaluateImplication() {
+        this.startTime = System.currentTimeMillis();
+        this.result.setStartTime(startTime);
+        fuzzyData();
+        if (this.predicate instanceof Imp) {
+            Imp imp = (Imp) this.predicate;
+            List<Double> rsPremise = new ArrayList<>();
+            List<Double> rsPredicate = new ArrayList<>();
+            // ∀x((∃xpx)∧px→qx))|x∈data
+            for (int i = 0; i < table.rowCount(); i++) {
+                rsPremise.add(fitValue(imp.getAntecedent(), i));
+                rsPredicate.add(fitValue(predicate, i));
+            }
+
+            double exits = logic.exist(rsPremise);
+            List<Double> rs = new ArrayList<>();
+            for (Double valDouble : rsPredicate) {
+                rs.add(logic.and(exits, valDouble));
+            }
+            Double value = logic.forAll(rs);
+            this.predicate.setFitness(value);
+        } else {
+            evaluate();
+        }
+        this.endTime = System.currentTimeMillis();
+        this.result.setEndTime(endTime);
+    }
+
     private void evaluate() {
         List<Double> result = new ArrayList<>(table.rowCount());
         for (int i = 0; i < table.rowCount(); i++) {

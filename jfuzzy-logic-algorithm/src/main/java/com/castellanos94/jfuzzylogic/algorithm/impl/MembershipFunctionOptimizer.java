@@ -17,6 +17,7 @@ import com.castellanos94.jfuzzylogic.algorithm.AMembershipFunctionOptimizer;
 import com.castellanos94.jfuzzylogic.algorithm.MembershipFunctionChromosome;
 import com.castellanos94.jfuzzylogic.core.OperatorUtil;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
+import com.castellanos94.jfuzzylogic.core.base.impl.Imp;
 import com.castellanos94.jfuzzylogic.core.base.impl.State;
 import com.castellanos94.jfuzzylogic.core.logic.Logic;
 import com.castellanos94.jfuzzylogic.core.membershipfunction.MembershipFunction;
@@ -198,21 +199,21 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
 
     @Override
     protected void evaluate(List<State> states, MembershipFunctionChromosome solution) {
-        /*
-         * Operator operator = (Operator) predicate.copy();
-         * ArrayList<State> _states = OperatorUtil.getNodesByClass(operator,
-         * State.class);
-         */
         for (State state : states) {
-            // State toUpd = _states.get(_states.indexOf(state));
             MembershipFunction function = solution.getFunction(state.getUuid());
             if (function == null) {
                 log.error("Error setting function to {} from {} ", state.getLabel(), predicate);
             }
             state.setMembershipFunction(function);
         }
-        //log.error("Predicate valid ? {} - {}",OperatorUtil.isValid(predicate, true),predicate);
-        new EvaluationAlgorithm(predicate, logic, table).execute();
+        // log.error("Predicate valid ? {} - {}",OperatorUtil.isValid(predicate,
+        // true),predicate);
+        EvaluationAlgorithm evaluator = new EvaluationAlgorithm(predicate, logic, table);
+        if (predicate instanceof Imp) {
+            evaluator.evaluateImplication();
+        } else {
+            evaluator.execute();
+        }
         solution.setFitness(predicate.getFitness());
     }
 
