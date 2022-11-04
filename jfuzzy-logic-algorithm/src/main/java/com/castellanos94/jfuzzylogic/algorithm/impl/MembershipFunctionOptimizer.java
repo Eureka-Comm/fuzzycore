@@ -164,7 +164,12 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
         for (State state : states) {
             state.setMembershipFunction(solution.getFunction(state.getUuid()));
         }
-        new EvaluationAlgorithm(predicate, logic, table).execute();
+        EvaluationAlgorithm evaluator =new EvaluationAlgorithm(predicate, logic, table);
+        if (predicate instanceof Imp) {
+            evaluator.evaluateImplication();
+        } else {
+            evaluator.execute();
+        }
         this.endTime = System.currentTimeMillis();
         return predicate;
     }

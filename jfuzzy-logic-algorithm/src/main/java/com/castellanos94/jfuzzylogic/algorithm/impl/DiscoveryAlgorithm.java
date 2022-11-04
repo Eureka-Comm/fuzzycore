@@ -308,6 +308,13 @@ public class DiscoveryAlgorithm extends Algorithm {
                 }
             }
         }
+        if (predicate instanceof Imp) {
+            for (Operator currenOperator : discoveryPredicates) {
+                double old = currenOperator.getFitness();
+                new EvaluationAlgorithm(currenOperator, logic, table).execute();
+                log.error("Fitness only for internal use {} - real {}", old, currenOperator.getFitness());
+            }
+        }
         discoveryPredicates.sort(Collections.reverseOrder());
         this.endTime = System.currentTimeMillis();
         log.error("Discovery Results {}, elapsed time {} ms", this.discoveryPredicates.size(), this.getComputeTime());
