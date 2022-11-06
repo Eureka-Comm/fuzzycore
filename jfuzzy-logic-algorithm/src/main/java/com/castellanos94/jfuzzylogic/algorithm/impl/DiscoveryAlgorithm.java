@@ -30,6 +30,8 @@ import com.castellanos94.jfuzzylogic.core.base.impl.Not;
 import com.castellanos94.jfuzzylogic.core.base.impl.Or;
 import com.castellanos94.jfuzzylogic.core.base.impl.State;
 import com.castellanos94.jfuzzylogic.core.logic.Logic;
+import com.castellanos94.jfuzzylogic.core.logic.impl.GMBC;
+import com.castellanos94.jfuzzylogic.core.logic.impl.GMBCFA;
 
 import tech.tablesaw.api.Table;
 
@@ -314,6 +316,11 @@ public class DiscoveryAlgorithm extends Algorithm {
                 double old = currenOperator.getFitness();
                 new EvaluationAlgorithm(currenOperator, logic, table).execute();
                 log.error("\tFitness only for internal use {} - real {}", old, currenOperator.getFitness());
+            }
+        }
+        if (this.logic instanceof GMBCFA) {
+            for (Operator currenOperator : discoveryPredicates) {
+                new EvaluationAlgorithm(currenOperator, new GMBC(this.logic.getType()), table).execute();
             }
         }
         discoveryPredicates.sort(Collections.reverseOrder());
