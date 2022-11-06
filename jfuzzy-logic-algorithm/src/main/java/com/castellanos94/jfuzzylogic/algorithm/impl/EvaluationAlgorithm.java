@@ -36,7 +36,7 @@ import tech.tablesaw.columns.Column;
  */
 public class EvaluationAlgorithm extends Algorithm {
     private static final Logger log = LogManager.getLogger(EvaluationAlgorithm.class);
-    private static final List<ColumnType> numericColumnTypes = Arrays.asList(ColumnType.DOUBLE, ColumnType.FLOAT,
+    public static final List<ColumnType> numericColumnTypes = Arrays.asList(ColumnType.DOUBLE, ColumnType.FLOAT,
             ColumnType.INTEGER,
             ColumnType.LONG, ColumnType.SHORT);
     protected HashMap<String, List<Double>> data;

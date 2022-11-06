@@ -23,17 +23,21 @@ import com.castellanos94.jfuzzylogic.core.base.impl.State;
 import com.castellanos94.jfuzzylogic.core.logic.Logic;
 import com.castellanos94.jfuzzylogic.core.membershipfunction.MembershipFunction;
 import com.castellanos94.jfuzzylogic.core.membershipfunction.impl.FPG;
+import com.castellanos94.jfuzzylogic.core.membershipfunction.impl.MapNominal;
 
+import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.NumericColumn;
 import tech.tablesaw.api.Table;
 
 /**
  * Membership function optimizer
  * 
- * @version 0.5.0
+ * @version 0.6.0
  * @apiNote {@link FPGGenerator} default generator
  * @apiNote {@link FPGCrossover} default crossover
  * @apiNote {@link FPGRepair} default repair
+ * @apiNote v 0.6.0 MapNominal optimization
+ * @apiNote v 0.5.0 default version
  */
 public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
     private static final Logger log = LogManager.getLogger(MembershipFunctionOptimizer.class);
@@ -173,6 +177,19 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
         }
         this.endTime = System.currentTimeMillis();
         return predicate;
+    }
+
+    @Override
+    protected Map<String, Class<? extends MembershipFunction>> identifyClass(List<State> states,
+            Class<? extends MembershipFunction> defaultClass) {
+        Map<String, Class<? extends MembershipFunction>> m = super.identifyClass(states, defaultClass);
+        for (State state : states) {
+            ColumnType type = table.column(state.getColName()).type();
+            if (!EvaluationAlgorithm.numericColumnTypes.contains(type)) {
+                m.put(state.getUuid(), MapNominal.class);
+            }
+        }
+        return m;
     }
 
     /**
