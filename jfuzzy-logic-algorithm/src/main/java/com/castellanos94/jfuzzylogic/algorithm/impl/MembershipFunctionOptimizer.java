@@ -215,7 +215,7 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
     protected void mutation(MembershipFunctionChromosome chromosome) {
         for (int i = 0; i < chromosome.getSize(); i++) {
             Class<? extends MembershipFunction> clazz = this.stateIdByClass.get(chromosome.getId(i));
-            if (this.mutationOperator.isEmpty() || random.nextDouble() <= this.mutationRate) {
+            if (!this.mutationOperator.containsKey(clazz) || random.nextDouble() <= this.mutationRate) {
                 MembershipFunction[] boundary = this.boundaries.get(chromosome.getId(i));
                 chromosome.setFunction(i, this.generatorOperator.get(clazz).generate(boundary[0], boundary[1]));
             } else {
