@@ -18,6 +18,7 @@ import com.castellanos94.jfuzzylogic.algorithm.MembershipFunctionChromosome;
 import com.castellanos94.jfuzzylogic.algorithm.operators.impl.FPGCrossover;
 import com.castellanos94.jfuzzylogic.algorithm.operators.impl.FPGGenerator;
 import com.castellanos94.jfuzzylogic.algorithm.operators.impl.FPGRepair;
+import com.castellanos94.jfuzzylogic.algorithm.operators.impl.MapNominalGeneticOperators;
 import com.castellanos94.jfuzzylogic.core.OperatorUtil;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
 import com.castellanos94.jfuzzylogic.core.base.impl.Eqv;
@@ -96,6 +97,10 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
         this.register(FPG.class, new FPGGenerator());
         this.register(FPG.class, new FPGRepair());
         this.register(FPG.class, new FPGCrossover(crossoverProbability));
+        this.register(MapNominal.class, new MapNominalGeneticOperators.Crossover(crossoverProbability, random));
+        this.register(MapNominal.class, new MapNominalGeneticOperators.Generator(random));
+        this.register(MapNominal.class, new MapNominalGeneticOperators.Mutation(mutationProbability, random));
+        this.register(MapNominal.class, new MapNominalGeneticOperators.Repair(random));
         this.states = new ArrayList<>();
     }
 

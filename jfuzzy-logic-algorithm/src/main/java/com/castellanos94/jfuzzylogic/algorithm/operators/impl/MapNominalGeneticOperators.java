@@ -8,6 +8,7 @@ import com.castellanos94.jfuzzylogic.algorithm.impl.Utils;
 import com.castellanos94.jfuzzylogic.algorithm.operators.IMembershipFunctionCrossover;
 import com.castellanos94.jfuzzylogic.algorithm.operators.IMembershipFunctionGenerator;
 import com.castellanos94.jfuzzylogic.algorithm.operators.IMembershipFunctionMutation;
+import com.castellanos94.jfuzzylogic.algorithm.operators.IMembershipFunctionRepair;
 import com.castellanos94.jfuzzylogic.core.membershipfunction.MembershipFunction;
 import com.castellanos94.jfuzzylogic.core.membershipfunction.impl.MapNominal;
 
@@ -114,4 +115,36 @@ public class MapNominalGeneticOperators {
 
     }
 
+    public static class Repair implements IMembershipFunctionRepair<MapNominal> {
+        protected Random random;
+
+        public Repair(Random random) {
+            this.random = random;
+        }
+
+        public Repair() {
+            this(new Random());
+        }
+
+        @Override
+        public MapNominal execute(MembershipFunction f, MembershipFunction l, MembershipFunction u) {
+            MapNominal a = (MapNominal) f;
+            MapNominal b = (MapNominal) l;
+            Iterator<String> iterator = b.getValues().keySet().iterator();
+            String key;
+            while (iterator.hasNext()) {
+                key = iterator.next();
+                if (!a.getValues().containsKey(key)) {
+                    a.add(key, Utils.randomNumber(random));
+                }
+                if (Double.compare(0, a.getValues().get(key)) > 0) {
+                    a.getValues().put(key, Utils.randomNumber(random));
+                } else if (Double.compare(1, a.getValues().get(key)) < 0) {
+                    a.getValues().put(key, Utils.randomNumber(random));
+                }
+            }
+            return a;
+        }
+
+    }
 }
