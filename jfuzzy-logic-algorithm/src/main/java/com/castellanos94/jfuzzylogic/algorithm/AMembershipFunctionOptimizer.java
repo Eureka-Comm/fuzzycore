@@ -7,6 +7,7 @@ import com.castellanos94.jfuzzylogic.algorithm.operators.IMembershipFunctionRepa
 import com.castellanos94.jfuzzylogic.core.base.Operator;
 import com.castellanos94.jfuzzylogic.core.base.impl.State;
 import com.castellanos94.jfuzzylogic.core.membershipfunction.MembershipFunction;
+import com.castellanos94.jfuzzylogic.core.membershipfunction.impl.FPG;
 
 import java.util.HashMap;
 import java.util.List;
@@ -115,7 +116,7 @@ public abstract class AMembershipFunctionOptimizer {
             if (!this.repairOperators.containsKey(clazz)) {
                 throw new JFuzzyLogicAlgorithmError("No repair operator is registered for " + clazz);
             }
-            if (!mutationOperator.isEmpty() && !this.mutationOperator.containsKey(clazz)) {
+            if (!clazz.equals(FPG.class) && !this.mutationOperator.containsKey(clazz)) {
                 throw new JFuzzyLogicAlgorithmError("No mutation operator is registered for " + clazz);
             }
         }
@@ -194,7 +195,7 @@ public abstract class AMembershipFunctionOptimizer {
      * @param states to work
      * @apiNote {@link IMembershipFunctionGenerator#generateBoundaries(MembershipFunction, Double...)}
      */
-    public abstract Map<String, MembershipFunction[]>  generateBoundaries(List<State> states);
+    public abstract Map<String, MembershipFunction[]> generateBoundaries(List<State> states);
 
     /**
      * Generate a new solution: this method delegates the creation of alleles to the
@@ -247,7 +248,7 @@ public abstract class AMembershipFunctionOptimizer {
     /**
      * Register new generator operator
      * 
-     * @param clazz             to apply operator
+     * @param clazz            to apply operator
      * @param mutationFunction operator
      * @return registered
      */
@@ -305,5 +306,4 @@ public abstract class AMembershipFunctionOptimizer {
         return mutationOperator;
     }
 
-    
 }
