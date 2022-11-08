@@ -1,4 +1,6 @@
-package com.castellanos94.jfuzzylogic.algorithm;
+package com.castellanos94.jfuzzylogic.algorithm.operators;
+
+import java.util.HashMap;
 
 import com.castellanos94.jfuzzylogic.core.membershipfunction.MembershipFunction;
 
@@ -17,6 +19,17 @@ public interface IMembershipFunctionGenerator<T extends MembershipFunction> {
      * @return [lower, upper] boundaries function
      */
     T[] generateBoundaries(MembershipFunction function, Double... referenceValues);
+
+    /**
+     * Generate boundaries
+     * 
+     * @param function In case of non-null parameters, reference function
+     * @param map      ref values map
+     * @return [lower, upper] boundaries function
+     */
+    default T[] generateBoundaries(MembershipFunction function, HashMap<String, Object> map) {
+        throw new UnsupportedOperationException("Not implemented yet for " + this.getClass().getSimpleName());
+    }
 
     /**
      * Generates a new membership function using the reference boundaries

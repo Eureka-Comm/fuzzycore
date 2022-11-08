@@ -5,8 +5,8 @@ import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 
-import com.castellanos94.jfuzzylogic.algorithm.impl.FPGGenerator;
 import com.castellanos94.jfuzzylogic.algorithm.impl.Utils;
+import com.castellanos94.jfuzzylogic.algorithm.operators.impl.FPGGenerator;
 import com.castellanos94.jfuzzylogic.core.membershipfunction.impl.FPG;
 
 public class MembershipFunctionGenerator {

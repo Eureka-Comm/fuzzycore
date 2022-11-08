@@ -15,6 +15,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.castellanos94.jfuzzylogic.algorithm.AMembershipFunctionOptimizer;
 import com.castellanos94.jfuzzylogic.algorithm.MembershipFunctionChromosome;
+import com.castellanos94.jfuzzylogic.algorithm.operators.impl.FPGCrossover;
+import com.castellanos94.jfuzzylogic.algorithm.operators.impl.FPGGenerator;
+import com.castellanos94.jfuzzylogic.algorithm.operators.impl.FPGRepair;
 import com.castellanos94.jfuzzylogic.core.OperatorUtil;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
 import com.castellanos94.jfuzzylogic.core.base.impl.Eqv;
@@ -27,6 +30,7 @@ import com.castellanos94.jfuzzylogic.core.membershipfunction.impl.MapNominal;
 
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.NumericColumn;
+import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
 
 /**
@@ -229,8 +233,6 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
             }
             state.setMembershipFunction(function);
         }
-        // log.error("Predicate valid ? {} - {}",OperatorUtil.isValid(predicate,
-        // true),predicate);
         EvaluationAlgorithm evaluator = new EvaluationAlgorithm(predicate, logic, table);
         if (predicate instanceof Imp) {
             evaluator.evaluateImplication();
@@ -245,10 +247,21 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
         Map<String, MembershipFunction[]> boundaries = new HashMap<>();
         for (State state : states) {
             Class<?> clazz = this.stateIdByClass.get(state.getUuid());
-            NumericColumn<?> column = table.numberColumn(state.getColName());
-            boundaries.put(state.getUuid(),
-                    this.generatorOperator.get(clazz).generateBoundaries(state.getMembershipFunction(), column.min(),
-                            column.mean(), column.max()));
+            if (clazz.equals(MapNominal.class)) {
+                StringColumn stringColumn = table.stringColumn(state.getColName());
+                HashMap<String, Object> map = new HashMap<>();
+                stringColumn.getDictionary().asSet().forEach(unique -> {
+                    map.put(unique, (int) map.getOrDefault(unique, 1) + stringColumn.countOccurrences(unique));
+                });
+                boundaries.put(state.getUuid(),
+                        this.generatorOperator.get(clazz).generateBoundaries(state.getMembershipFunction(), map));
+            } else {
+                NumericColumn<?> column = table.numberColumn(state.getColName());
+                boundaries.put(state.getUuid(),
+                        this.generatorOperator.get(clazz).generateBoundaries(state.getMembershipFunction(),
+                                column.min(),
+                                column.mean(), column.max()));
+            }
         }
         return boundaries;
     }

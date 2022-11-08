@@ -1,4 +1,4 @@
-package com.castellanos94.jfuzzylogic.algorithm;
+package com.castellanos94.jfuzzylogic.algorithm.operators;
 
 import com.castellanos94.jfuzzylogic.core.membershipfunction.MembershipFunction;
 

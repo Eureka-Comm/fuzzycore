@@ -1,5 +1,9 @@
 package com.castellanos94.jfuzzylogic.algorithm;
 
+import com.castellanos94.jfuzzylogic.algorithm.operators.IMembershipFunctionCrossover;
+import com.castellanos94.jfuzzylogic.algorithm.operators.IMembershipFunctionGenerator;
+import com.castellanos94.jfuzzylogic.algorithm.operators.IMembershipFunctionMutation;
+import com.castellanos94.jfuzzylogic.algorithm.operators.IMembershipFunctionRepair;
 import com.castellanos94.jfuzzylogic.core.base.Operator;
 import com.castellanos94.jfuzzylogic.core.base.impl.State;
 import com.castellanos94.jfuzzylogic.core.membershipfunction.MembershipFunction;

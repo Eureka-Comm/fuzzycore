@@ -1,9 +1,9 @@
-package com.castellanos94.jfuzzylogic.algorithm.impl;
+package com.castellanos94.jfuzzylogic.algorithm.operators.impl;
 
 import java.util.Random;
 
 import com.castellanos94.jfuzzylogic.algorithm.AProbabilityOperator;
-import com.castellanos94.jfuzzylogic.algorithm.IMembershipFunctionCrossover;
+import com.castellanos94.jfuzzylogic.algorithm.operators.IMembershipFunctionCrossover;
 import com.castellanos94.jfuzzylogic.core.membershipfunction.MembershipFunction;
 import com.castellanos94.jfuzzylogic.core.membershipfunction.impl.FPG;
 
