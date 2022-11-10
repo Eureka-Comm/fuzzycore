@@ -29,7 +29,7 @@ public class MembershipFunctionOptimizerTest {
                 ClassLoader classLoader = App.class.getClassLoader();
                 File file = new File(classLoader.getResource("datasets/tinto.csv").getFile());
                 Table table = Table.read().csv(file);
-                Operator predicate = new Imp(
+                Operator predicate = new And(
                                 new And(new State("low alcohol", "alcohol", new FPG(1.0, null, 0.4)),
                                                 new State("acid", "citric_acid", new FPG(null, 0.5, null)),
                                                 new State("pH"), new State("volatile_acidity"),

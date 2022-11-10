@@ -33,6 +33,14 @@ public class Nominal extends MembershipFunction {
     }
 
     @Override
+    public double eval(String value) {
+        if (value.equalsIgnoreCase(key)) {
+            return this.value;
+        }
+        return notFoundValue;
+    }
+
+    @Override
     public boolean isValid() {
         return key != null && value != null;
     }

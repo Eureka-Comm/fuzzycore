@@ -160,7 +160,7 @@ public class DiscoveryAlgorithm extends Algorithm {
         this.optimizer = new MembershipFunctionOptimizer(logic, table, adjMaxIteration, adjPopulationSize,
                 adjMinTruthValue, adjCrossoverRate, adjMutationRate);
         this.random = new Random();
-        this.maximumToleranceForRepeated = 3;
+        this.maximumToleranceForRepeated = 2;
     }
 
     @Override
