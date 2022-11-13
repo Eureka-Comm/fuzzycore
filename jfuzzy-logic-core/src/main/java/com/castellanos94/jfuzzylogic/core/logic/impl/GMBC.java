@@ -73,4 +73,9 @@ public class GMBC extends Logic {
                 Double::sum);
         return (1 - Math.pow(Math.E, ((1.0 / values.size()) * result)));
     }
+
+    @Override
+    public GMBC copy() {
+        return new GMBC(this.type);
+    }
 }

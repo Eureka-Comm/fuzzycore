@@ -6,7 +6,8 @@ import com.castellanos94.jfuzzylogic.core.logic.ImplicationType;
 import com.castellanos94.jfuzzylogic.core.logic.Logic;
 
 /**
- * AMBC logic: <a href="https://doi.org/10.1142/S1469026811003070">article</a> -based implementation.
+ * AMBC logic: <a href="https://doi.org/10.1142/S1469026811003070">article</a>
+ * -based implementation.
  *
  * @author Castellanos-Alvarez, Alejandro.
  * @version 1.0
@@ -74,4 +75,8 @@ public class AMBC extends Logic {
                 * values.stream().mapToDouble(Double::doubleValue).sum());
     }
 
+    @Override
+    public AMBC copy() {
+        return new AMBC(type);
+    }
 }

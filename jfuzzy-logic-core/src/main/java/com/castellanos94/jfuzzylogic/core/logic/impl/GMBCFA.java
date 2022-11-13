@@ -12,6 +12,8 @@ import com.castellanos94.jfuzzylogic.core.logic.ImplicationType;
  */
 public class GMBCFA extends GMBC {
     protected int exponent;
+    protected double c;
+    protected double ci;
 
     public GMBCFA(int coefficient, ImplicationType implicationType) {
         super(implicationType);
@@ -24,25 +26,44 @@ public class GMBCFA extends GMBC {
 
     @Override
     public double forAll(Collection<Double> values) {
-        double pe = 0.0;
-        for (double v : values) {
-            if (v != 0) {
-                pe += Math.log(v);
+        // u = sum(ln x_i)/n
+        // v = sqrt(1/n*sum(u-x_i)^2)
+        // c = exp(u)
+        // ci = exp(u - a (v/ sqrt(n)))
+        // fo = sqrt(c * ci)
+        double u = 0, v = 0;
+        for (Double x : values) {
+            if (x != 0) {
+                u = +Math.log(x);
             } else {
                 return 0;
             }
         }
-        pe /= values.size();
-        double r = 0;
-        for (double v : values) {
-            r += (v - pe) * (v - pe);
+        u = u / values.size();
+        for (Double x : values) {
+            v += Math.pow(u - x, 2);
         }
-        r = Math.sqrt(r / values.size());
-        return Math.exp(pe - exponent * r);
+        v = v / values.size();
+        c = Math.exp(u);
+        ci = Math.exp(u - exponent * (v / Math.sqrt(values.size())));
+        return Math.sqrt(c * ci);
     }
 
     @Override
     public String toString() {
         return this.getClass().getName() + " " + type + " " + exponent;
+    }
+
+    public double getC() {
+        return c;
+    }
+
+    public double getCi() {
+        return ci;
+    }
+
+    @Override
+    public GMBCFA copy() {
+        return new GMBCFA(exponent, type);
     }
 }

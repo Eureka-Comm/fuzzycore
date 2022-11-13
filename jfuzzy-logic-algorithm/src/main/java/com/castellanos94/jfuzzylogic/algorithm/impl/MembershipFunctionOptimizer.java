@@ -286,7 +286,8 @@ public class MembershipFunctionOptimizer extends AMembershipFunctionOptimizer {
 
     @Override
     public MembershipFunctionOptimizer copy() {
-        MembershipFunctionOptimizer cpy = new MembershipFunctionOptimizer(logic, table, maxIterations, populationSize,
+        MembershipFunctionOptimizer cpy = new MembershipFunctionOptimizer(logic.copy(), table, maxIterations,
+                populationSize,
                 minTruthValue, crossoverRate, mutationRate);
         getGeneratorOperator().forEach(cpy::register);
         getCrossoverOperator().forEach(cpy::register);

@@ -64,4 +64,9 @@ public class Zadeh extends Logic {
         return values.stream().max(Double::compare).get();
     }
 
+    @Override
+    public Zadeh copy() {
+        return new Zadeh();
+    }
+
 }

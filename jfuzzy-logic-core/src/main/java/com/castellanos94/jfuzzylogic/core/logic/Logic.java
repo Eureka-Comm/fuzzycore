@@ -68,4 +68,6 @@ public abstract class Logic {
     public void setType(ImplicationType type) {
         this.type = type;
     }
+
+    public abstract Logic copy();
 }

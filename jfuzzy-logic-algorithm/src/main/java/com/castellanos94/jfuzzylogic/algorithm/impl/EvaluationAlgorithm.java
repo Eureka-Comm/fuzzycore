@@ -23,6 +23,7 @@ import com.castellanos94.jfuzzylogic.core.base.impl.Not;
 import com.castellanos94.jfuzzylogic.core.base.impl.Or;
 import com.castellanos94.jfuzzylogic.core.base.impl.State;
 import com.castellanos94.jfuzzylogic.core.logic.Logic;
+import com.castellanos94.jfuzzylogic.core.logic.impl.GMBCFA;
 
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.NumericColumn;
@@ -118,6 +119,10 @@ public class EvaluationAlgorithm extends Algorithm {
         predicate.setFitness(forAll);
         this.result.setPredicate(predicate);
         data.put("result", result);
+        if (this.logic instanceof GMBCFA) {
+            this.result.setC(((GMBCFA) this.logic).getC());
+            this.result.setCi(((GMBCFA) this.logic).getCi());
+        }
         this.result.setData(data);
     }
 
