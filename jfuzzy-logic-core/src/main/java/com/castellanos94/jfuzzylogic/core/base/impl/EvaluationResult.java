@@ -15,7 +15,5 @@ public class EvaluationResult extends Result {
     protected Operator predicate;
     protected Double forAll;
     protected Double exists;
-    protected Double c;
-    protected Double ci;
     protected HashMap<String, List<Double>> data;
 }

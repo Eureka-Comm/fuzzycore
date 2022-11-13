@@ -120,8 +120,15 @@ public class EvaluationAlgorithm extends Algorithm {
         this.result.setPredicate(predicate);
         data.put("result", result);
         if (this.logic instanceof GMBCFA) {
-            this.result.setC(((GMBCFA) this.logic).getC());
-            this.result.setCi(((GMBCFA) this.logic).getCi());
+            GMBCFA fl = (GMBCFA) this.logic;
+            List<Double> c = new ArrayList<>(table.rowCount());
+            c.add(fl.getC());
+            List<Double> ci = new ArrayList<>(table.rowCount());
+            ci.add(fl.getCi());
+            for (int i = 1; i < table.rowCount(); i++) {
+                c.add(Double.NaN);
+                ci.add(Double.NaN);
+            }
         }
         this.result.setData(data);
     }
