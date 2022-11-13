@@ -129,6 +129,8 @@ public class EvaluationAlgorithm extends Algorithm {
                 c.add(Double.NaN);
                 ci.add(Double.NaN);
             }
+            this.data.put("ci", ci);
+            this.data.put("c", c);
         }
         this.result.setData(data);
     }
