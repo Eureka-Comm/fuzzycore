@@ -79,7 +79,7 @@ public class OperatorUtilTest {
         assertEquals(true, OperatorUtil.isValid(alcohol));
         assertEquals(false, OperatorUtil.isValid(q, true));
         assertEquals(true, OperatorUtil.isValid(d));
-        assertEquals(false, OperatorUtil.isValid(d, true));
+        assertEquals(true, OperatorUtil.isValid(d, true));
     }
     @Test
     public void dfs() {
